@@ -10,25 +10,45 @@ import java.util.TreeMap;
  */
 public class RandomUtil {
 
-    private static final Random random=new Random();
+  private static final Random random = new Random();
 
-    public static <T> RandomService<T> getRandomData(List<T> list){
-        assert list!=null&&list.size()>0;
-        return () -> list.get(random.nextInt(list.size()));
+  public static <T> RandomService<T> getRandomData(List<T> list) {
+    assert list != null && list.size() > 0;
+    return () -> list.get(random.nextInt(list.size()));
+  }
+
+  public static <T> RandomService<T> getRandomWeightData(Map<T, Integer> map) {
+    assert map != null && map.size() > 0;
+
+    final TreeMap<Integer, T> treeMap = new TreeMap<>();
+
+    int size = 0;
+    for (Map.Entry<T, Integer> e : map.entrySet()) {
+      size += e.getValue();
+      treeMap.put(size - 1, e.getKey());
     }
+    final int len = size;
+    return () -> treeMap.ceilingEntry(random.nextInt(len)).getValue();
+  }
 
-    public static <T>  RandomService<T> getRandomWeightData(Map<T,Integer> map){
-        assert map!=null&&map.size()>0;
+  public static RandomService<Long> getRandomLong(long start, long end) {
+    assert start <= end;
+    return () -> start + Math.abs(random.nextLong() % (end - start)) % (end - start);
+  }
 
-        final TreeMap<Integer,T> treeMap =new TreeMap<>();
+  public static RandomService<Integer> getRandomInt(int start, int end) {
+    assert start <= end;
+    return () -> start + random.nextInt(end - start);
+  }
 
-        int size=0;
-        for (Map.Entry<T,Integer> e:map.entrySet()){
-            size+=e.getValue();
-            treeMap.put(size-1,e.getKey());
-        }
-        final int len=size;
-        return () -> treeMap.ceilingEntry(random.nextInt(len)).getValue();
-    }
+  public static RandomService<Long> getRandomGaussianLong(long start, long end) {
+    assert start <= end;
+    return () -> (long) random.nextGaussian() * (end - start) + (end - start) / 2 + start;
+  }
+
+  public static RandomService<Integer> getRandomGaussianInt(int start, int end) {
+    assert start <= end;
+    return () -> (int) (random.nextGaussian() * (end - start)) + (end - start) / 2 + start;
+  }
 
 }
