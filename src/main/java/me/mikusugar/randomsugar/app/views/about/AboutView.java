@@ -14,7 +14,7 @@ public class AboutView extends Div {
 
     public AboutView() {
         addClassName("about-view");
-        add(new Text("Content placeholder"));
+        add(new Text("开发中"));
     }
 
 }
