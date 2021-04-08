@@ -1,5 +1,7 @@
 package me.mikusugar.randomsugar.app.views.sugarrandom;
 
+import com.vaadin.flow.component.ClickEvent;
+import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -9,7 +11,10 @@ import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
+import me.mikusugar.randomsugar.app.bean.SugarJsonNode;
+import me.mikusugar.randomsugar.app.service.AnalysisService;
 import me.mikusugar.randomsugar.app.views.main.MainView;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Route(value = "sugarrandom", layout = MainView.class)
 @RouteAlias(value = "", layout = MainView.class)
@@ -17,6 +22,9 @@ import me.mikusugar.randomsugar.app.views.main.MainView;
 @CssImport("./views/sugarrandom/sugar-random-view.css")
 public class SugarRandomView extends HorizontalLayout {
 
+
+  @Autowired
+  private AnalysisService analysisService;
 
   private TextArea sampleJson;
   private Button analysisButton;
@@ -45,6 +53,12 @@ public class SugarRandomView extends HorizontalLayout {
     analysisLayout.add(sampleJson, analysisButton);
     analysisLayout.setVerticalComponentAlignment(Alignment.END,sampleJson, analysisButton);
     add(analysisLayout);
+    analysisButton.addClickListener(
+        (ComponentEventListener<ClickEvent<Button>>) buttonClickEvent -> {
+          SugarJsonNode jsonNode = analysisService.jsonStr2JsonNode(sampleJson.getValue());
+
+
+        });
 
     HorizontalLayout settingLayout = createHorizontalLayout();
     field = new Select<>();
