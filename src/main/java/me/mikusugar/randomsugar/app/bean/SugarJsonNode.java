@@ -1,6 +1,5 @@
 package me.mikusugar.randomsugar.app.bean;
 
-import java.util.Map;
 import lombok.Data;
 import me.mikusugar.randomsugar.app.utils.RandomService;
 
@@ -11,12 +10,8 @@ import me.mikusugar.randomsugar.app.utils.RandomService;
 public class SugarJsonNode {
 
   public enum TYPE{
-    NULL, NUMBER, BOOLEAN, STRING, ARRAY, OBJECT
+    NULL, LONG, DOUBLE, BOOLEAN, STRING, ARRAY, OBJECT,INT
   }
-
-  private Map<String,SugarJsonNode> fieldMap;
-
-  private String Value;
 
   private TYPE type;
 

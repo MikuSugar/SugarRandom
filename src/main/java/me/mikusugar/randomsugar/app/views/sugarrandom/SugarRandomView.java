@@ -1,20 +1,22 @@
 package me.mikusugar.randomsugar.app.views.sugarrandom;
 
-import com.vaadin.flow.component.ClickEvent;
-import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextArea;
+import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.treegrid.TreeGrid;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
+import java.util.Arrays;
 import me.mikusugar.randomsugar.app.bean.SugarJsonNode;
-import me.mikusugar.randomsugar.app.service.AnalysisService;
+import me.mikusugar.randomsugar.app.bean.SugarJsonNode.TYPE;
 import me.mikusugar.randomsugar.app.views.main.MainView;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Route(value = "sugarrandom", layout = MainView.class)
 @RouteAlias(value = "", layout = MainView.class)
@@ -22,21 +24,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 @CssImport("./views/sugarrandom/sugar-random-view.css")
 public class SugarRandomView extends HorizontalLayout {
 
+  protected Logger log = LoggerFactory.getLogger(getClass());
 
-  @Autowired
-  private AnalysisService analysisService;
-
-  private TextArea sampleJson;
-  private Button analysisButton;
-
-  private Select<String> field;
-  private Select<String> selectType;
-  private TextArea detailed;
+  private TextField fieldName;
+  private TextField fieldFather;
+  private Select<String> filedType;
+  private Select<String> randomType;
+  private TextArea randomInfo;
   private Button next;
-
-  private Button preview;
-  private TextArea previewRes;
-
+  private TreeGrid<SugarJsonNode> treeGrid;
   private NumberField number;
   private Button start;
 
@@ -44,41 +40,36 @@ public class SugarRandomView extends HorizontalLayout {
 
     HorizontalLayout top = createHorizontalLayout();
     add(top);
+    HorizontalLayout fieldLayout = createHorizontalLayout();
+    fieldName=new TextField();
+    fieldName.setLabel("字段名");
+    fieldFather=new TextField();
+    fieldFather.setLabel("字段父亲");
+    fieldFather.setValue("root");
+    filedType=new Select<>();
+    filedType.setLabel("字段类型");
+    filedType.setItems(Arrays.stream(TYPE.values()).map(String::valueOf));
+    randomType=new Select<>();
+    randomType.setLabel("随机类型");
+    next=new Button("下一个");
+    fieldLayout.add(fieldName,fieldFather,filedType,randomType,next);
+    fieldLayout.setVerticalComponentAlignment(Alignment.END,fieldName,fieldFather,filedType,randomType,next);
+    add(fieldLayout);
 
-    HorizontalLayout analysisLayout = createHorizontalLayout();
-    sampleJson = new TextArea();
-    sampleJson.setWidthFull();
-    sampleJson.setLabel("样例Json");
-    analysisButton = new Button("解析");
-    analysisLayout.add(sampleJson, analysisButton);
-    analysisLayout.setVerticalComponentAlignment(Alignment.END,sampleJson, analysisButton);
-    add(analysisLayout);
-    analysisButton.addClickListener(
-        (ComponentEventListener<ClickEvent<Button>>) buttonClickEvent -> {
-          SugarJsonNode jsonNode = analysisService.jsonStr2JsonNode(sampleJson.getValue());
+    HorizontalLayout randomLayout = createHorizontalLayout();
+    randomInfo=new TextArea();
+    randomInfo.setLabel("随机参数");
+    randomInfo.setWidthFull();
+    randomLayout.add(randomInfo);
+    randomLayout.setVerticalComponentAlignment(Alignment.END,randomInfo);
+    add(randomLayout);
 
-
-        });
-
-    HorizontalLayout settingLayout = createHorizontalLayout();
-    field = new Select<>();
-    field.setLabel("字段名");
-    selectType = new Select<>();
-    selectType.setLabel("随机类型");
-    detailed = new TextArea("随机细节");
-    next = new Button("下一个");
-    preview = new Button("预览");
-    settingLayout.add(field, selectType, detailed, next,preview);
-    settingLayout.setVerticalComponentAlignment(Alignment.END,field,selectType,detailed,next,preview);
-    add(settingLayout);
-
-    HorizontalLayout previewLayout = createHorizontalLayout();
-    previewRes = new TextArea();
-    previewRes.setLabel("预览结果");
-    previewRes.setWidthFull();
-    previewLayout.add(previewRes);
-    previewLayout.setVerticalComponentAlignment(Alignment.END,previewRes);
-    add(previewLayout);
+    HorizontalLayout treeLayout  = createHorizontalLayout();
+    treeGrid=new TreeGrid<>();
+    treeGrid.setWidthFull();
+    treeLayout.add(treeGrid);
+    treeLayout.setVerticalComponentAlignment(Alignment.END,treeGrid);
+    add(treeLayout);
 
     HorizontalLayout startLayout = createHorizontalLayout();
     number = new NumberField();
@@ -88,13 +79,12 @@ public class SugarRandomView extends HorizontalLayout {
     number.setMax(10000);
     number.setLabel("生成条数");
     start = new Button("开始");
-    startLayout.add(number, start);
-    settingLayout.setVerticalComponentAlignment(Alignment.END,number,start);
+    startLayout.add(number,start);
+    startLayout.setVerticalComponentAlignment(Alignment.END,number,start);
     add(startLayout);
 
     addClassName("sugar-random-view");
-    setVerticalComponentAlignment(Alignment.END, top, analysisLayout, settingLayout, previewLayout,
-        startLayout);
+    setVerticalComponentAlignment(Alignment.END, top,fieldLayout,randomLayout,treeLayout,startLayout);
   }
 
   private HorizontalLayout createHorizontalLayout() {
