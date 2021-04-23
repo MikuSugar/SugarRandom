@@ -7,5 +7,7 @@ public class ServiceName {
 
   public static final String RANDOM_INT = "随机范围的整数（Int）";
 
-  public static final String[] values = {DEFAULT_CHINA_CITY, RANDOM_INT};
+  public static final String RANDOM_LONG = "随机范围的整数（Long）";
+
+  public static final String[] values = {DEFAULT_CHINA_CITY, RANDOM_INT, RANDOM_LONG};
 }

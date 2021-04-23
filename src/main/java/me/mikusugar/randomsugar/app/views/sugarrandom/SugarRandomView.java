@@ -24,7 +24,6 @@ import me.mikusugar.randomsugar.app.constant.ServiceName;
 import me.mikusugar.randomsugar.app.service.AbstractRandomService;
 import me.mikusugar.randomsugar.app.utils.NotionUtils;
 import me.mikusugar.randomsugar.app.views.main.MainView;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -11,19 +11,18 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest
 public class RandomIntTest {
 
-    @Autowired
-    private RandomInt randomInt;
+  @Autowired private RandomInt randomInt;
 
-    private final String intType=SugarJsonNode.TYPE.INT.toString();
+  private final String intType = SugarJsonNode.TYPE.INT.toString();
 
-    @Test()
-    public void testParse(){
-       assert (randomInt.check(intType,"1,2,1"));
-       assert (randomInt.check(intType,"1,2,0"));
-       assert (!randomInt.check("","1,2,0"));
-       assert (!randomInt.check(intType,"2,1,a"));
-       assert (!randomInt.check(intType,"2,1,1"));
-       assert (!randomInt.check(intType,"22,25,3"));
-       assert (randomInt.check(intType,"  4,5,1   "));
-    }
+  @Test()
+  public void testParse() {
+    assert (randomInt.check(intType, "1,2,1"));
+    assert (randomInt.check(intType, "1,2,0"));
+    assert (!randomInt.check("", "1,2,0"));
+    assert (!randomInt.check(intType, "2,1,a"));
+    assert (!randomInt.check(intType, "2,1,1"));
+    assert (!randomInt.check(intType, "22,25,3"));
+    assert (randomInt.check(intType, "  4,5,1   "));
+  }
 }
