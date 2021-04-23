@@ -25,6 +25,13 @@ public  abstract class  AbstractRandomService<T> {
     public abstract String helpText();
 
 
+    /**
+     * 检查合法
+     * @param type 类型检查
+     * @param input 输入检查
+     * @return
+     */
+    public abstract boolean check(String type,String input);
 
 
 

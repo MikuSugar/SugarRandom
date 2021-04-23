@@ -2,6 +2,8 @@ package me.mikusugar.randomsugar.app.service.impl;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import me.mikusugar.randomsugar.app.bean.SugarJsonNode;
 import me.mikusugar.randomsugar.app.constant.ServiceName;
 import me.mikusugar.randomsugar.app.service.AbstractRandomService;
 import me.mikusugar.randomsugar.app.utils.RandomUtil;
@@ -15,7 +17,7 @@ import org.springframework.stereotype.Service;
 @Service(ServiceName.DEFAULT_CHINA_CITY)
 public class DefaultRandomChainCity extends AbstractRandomService<String> {
 
-  private static RandomUtilInterface<String> random;
+  private static final RandomUtilInterface<String> random;
   static {
     SugarPair<String, Integer>[] citys = new SugarPair[]{
         new SugarPair<>("ShangHai", 4),
@@ -67,6 +69,11 @@ public class DefaultRandomChainCity extends AbstractRandomService<String> {
   @Override
   public String helpText() {
     return "随机生成国内城市，无需输入～ (北上广等概率大)";
+  }
+
+  @Override
+  public boolean check(String type, String input) {
+    return SugarJsonNode.TYPE.STRING.toString().equals(type);
   }
 
 

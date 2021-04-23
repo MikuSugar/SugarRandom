@@ -78,27 +78,25 @@ public class SugarRandomView extends HorizontalLayout {
               return;
             }
             val node =
-                    SugarJsonNode.builder()
-                            .name(fieldName.getValue())
-                            .type(TYPE.valueOf(filedType.getValue()))
-                            .randomService(
-                                    randomServiceMap
-                                            .get(randomType.getValue())
-                                            .createRandomUtilInterface(randomInfo.getValue()))
-                            .desc(randomServiceMap.get(randomType.getValue()).helpText())
-                            .build();
+                SugarJsonNode.builder()
+                    .name(fieldName.getValue())
+                    .type(TYPE.valueOf(filedType.getValue()))
+                    .randomService(
+                        randomServiceMap
+                            .get(randomType.getValue())
+                            .createRandomUtilInterface(randomInfo.getValue()))
+                    .desc(randomServiceMap.get(randomType.getValue()).helpText())
+                    .build();
             map.get(fieldFather.getValue()).getNexts().add(node);
             map.put(node.getName(), node);
             flushTree();
           }
 
           private boolean checkNext() {
-            if (StringUtils.isEmpty(fieldFather.getValue())
-                || StringUtils.isEmpty(fieldName.getValue())
-                || StringUtils.isEmpty(filedType.getValue())) return false;
-            if (map.containsKey(fieldName.getValue()) || !map.containsKey(fieldFather.getValue()))
-              return false;
-            return randomServiceMap.get(randomType.getValue()) != null;
+            if (!randomServiceMap
+                .get(randomType.getValue())
+                .check(filedType.getValue(), randomInfo.getValue().trim())) return false;
+            return !map.containsKey(fieldName.getValue()) && map.containsKey(fieldFather.getValue());
           }
         });
   }
@@ -158,7 +156,7 @@ public class SugarRandomView extends HorizontalLayout {
     flushTree();
   }
 
-  private void flushTree(){
+  private void flushTree() {
     treeGrid.removeAllColumns();
     treeGrid.setItems(Collections.singletonList(rootNode), SugarJsonNode::getNexts);
     treeGrid.addHierarchyColumn(SugarJsonNode::getName).setHeader("字段名");
