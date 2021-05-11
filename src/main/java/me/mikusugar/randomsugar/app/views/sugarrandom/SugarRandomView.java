@@ -5,6 +5,7 @@ import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.NumberField;
@@ -15,8 +16,11 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
+import com.vaadin.flow.server.StreamResource;
 import lombok.val;
 import me.mikusugar.randomsugar.app.bean.SugarJsonNode;
 import me.mikusugar.randomsugar.app.bean.SugarJsonNode.TYPE;
@@ -24,6 +28,7 @@ import me.mikusugar.randomsugar.app.constant.ServiceName;
 import me.mikusugar.randomsugar.app.service.AbstractRandomService;
 import me.mikusugar.randomsugar.app.utils.NotionUtils;
 import me.mikusugar.randomsugar.app.views.main.MainView;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,7 +100,8 @@ public class SugarRandomView extends HorizontalLayout {
             if (!randomServiceMap
                 .get(randomType.getValue())
                 .check(filedType.getValue(), randomInfo.getValue().trim())) return false;
-            return !map.containsKey(fieldName.getValue()) && map.containsKey(fieldFather.getValue());
+            return !map.containsKey(fieldName.getValue())
+                && map.containsKey(fieldFather.getValue());
           }
         });
   }
@@ -145,14 +151,74 @@ public class SugarRandomView extends HorizontalLayout {
     number.setMax(10000);
     number.setLabel("生成条数");
     start = new Button("开始");
-    startLayout.add(number, start);
-    startLayout.setVerticalComponentAlignment(Alignment.END, number, start);
+    StreamResource href = new StreamResource("download.json", this::getInputStream);
+    href.setCacheTime(0);
+    Anchor download = new Anchor(href, "");
+    download.getElement().setAttribute("开始", true);
+    download.add(start);
+
+    startLayout.add(number, download);
+    startLayout.setVerticalComponentAlignment(Alignment.END, number, download);
     add(startLayout);
 
     addClassName("sugar-random-view");
     setVerticalComponentAlignment(
         Alignment.END, top, fieldLayout, randomLayout, treeLayout, startLayout);
     flushTree();
+  }
+
+  private InputStream getInputStream() {
+    val res = new StringBuilder();
+    int size = number.getValue().intValue();
+    System.out.println(size);
+    while (size-- > 0) {
+      toJsonStr(rootNode, res);
+      res.append(",").append("\n");
+    }
+    res.deleteCharAt(res.lastIndexOf(","));
+    return IOUtils.toInputStream(res.toString(), StandardCharsets.UTF_8);
+  }
+
+  private static void toJsonStr(SugarJsonNode node, StringBuilder sb) {
+    if (node.getType() == TYPE.OBJECT) {
+      if (node.getName().equals("root")) sb.append("{");
+      else sb.append(helpName(node.getName())).append("{");
+      node.getNexts()
+          .forEach(
+              n -> {
+                toJsonStr(n, sb);
+                sb.append(",");
+              });
+      if (node.getNexts().size() > 0) sb.deleteCharAt(sb.lastIndexOf(","));
+      sb.append("}").append("\n");
+    } else if (node.getType() == TYPE.STRING) {
+      sb.append(helpName(node.getName()))
+          .append("\"")
+          .append(node.getRandomService().next())
+          .append("\"");
+    } else if (node.getType() == TYPE.LONG
+        || node.getType() == TYPE.INT
+        || node.getType() == TYPE.DOUBLE
+        || node.getType() == TYPE.BOOLEAN) {
+      sb.append(helpName(node.getName())).append(node.getRandomService().next().toString());
+    } else if (node.getType() == TYPE.NULL) {
+      sb.append(helpName(node.getName())).append("null");
+    } else if (node.getType() == TYPE.ARRAY) {
+      sb.append(helpName(node.getName())).append("[");
+      int size = (int) node.getRandomService().next();
+      if (size == 0) sb.append("]");
+      else {
+        while (size-- > 0) {
+          toJsonStr(node.getNexts().get(0), sb);
+          sb.append(",");
+        }
+        sb.deleteCharAt(sb.lastIndexOf(","));
+      }
+    }
+  }
+
+  private static String helpName(String name) {
+    return "\"" + name + "\":";
   }
 
   private void flushTree() {
