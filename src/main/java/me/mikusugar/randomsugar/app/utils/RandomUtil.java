@@ -5,9 +5,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
 
-/**
- * author: fangjie email: syfangjie@live.cn date: 2021/3/29 11:03 上午
- */
+/** author: fangjie email: syfangjie@live.cn date: 2021/3/29 11:03 上午 */
 public class RandomUtil {
 
   private static final Random random = new Random();
@@ -43,12 +41,12 @@ public class RandomUtil {
 
   public static RandomUtilInterface<Long> getRandomGaussianLong(long start, long end) {
     assert start <= end;
-    return () -> (long) random.nextGaussian() * (end - start) + (end - start) / 2 + start;
+    return () ->
+        (long) (random.nextGaussian() * Math.sqrt(end - start)) + (end - start) / 2 + start;
   }
 
   public static RandomUtilInterface<Integer> getRandomGaussianInt(int start, int end) {
     assert start <= end;
-    return () -> (int) (random.nextGaussian() * (end - start)) + (end - start) / 2 + start;
+    return () -> (int) (random.nextGaussian() * Math.sqrt(end - start)) + (end - start) / 2 + start;
   }
-
 }
