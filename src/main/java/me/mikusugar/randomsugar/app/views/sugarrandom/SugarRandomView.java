@@ -16,6 +16,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -176,7 +177,12 @@ public class SugarRandomView extends HorizontalLayout {
       res.append(",").append("\n");
     }
     res.deleteCharAt(res.lastIndexOf(","));
-    return IOUtils.toInputStream(res.toString(), StandardCharsets.UTF_8);
+    try {
+      return IOUtils.toInputStream(res.toString(), "GBK");
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return null;
   }
 
   private static void toJsonStr(SugarJsonNode father,SugarJsonNode node, StringBuilder sb) {
