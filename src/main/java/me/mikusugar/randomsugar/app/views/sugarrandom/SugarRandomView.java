@@ -28,6 +28,7 @@ import me.mikusugar.randomsugar.app.bean.SugarJsonNode.TYPE;
 import me.mikusugar.randomsugar.app.constant.ServiceName;
 import me.mikusugar.randomsugar.app.service.AbstractRandomService;
 import me.mikusugar.randomsugar.app.utils.NotionUtils;
+import me.mikusugar.randomsugar.app.utils.SugarJsonUtils;
 import me.mikusugar.randomsugar.app.views.main.MainView;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -173,7 +174,7 @@ public class SugarRandomView extends HorizontalLayout {
     int size = number.getValue().intValue();
     System.out.println(size);
     while (size-- > 0) {
-      toJsonStr(null,rootNode, res);
+      SugarJsonUtils.toJsonStr(null,rootNode, res);
       res.append(",").append("\n");
     }
     res.deleteCharAt(res.lastIndexOf(","));
@@ -185,46 +186,6 @@ public class SugarRandomView extends HorizontalLayout {
     return null;
   }
 
-  private static void toJsonStr(SugarJsonNode father,SugarJsonNode node, StringBuilder sb) {
-    if (node.getType() == TYPE.OBJECT) {
-      if (node.getName().equals("root")) sb.append("{");
-      else sb.append(helpName(father,node.getName())).append("{");
-      node.getNexts()
-              .forEach(
-                      n -> {
-                        toJsonStr(node,n, sb);
-                        sb.append(",");
-                      });
-      if (node.getNexts().size() > 0) sb.deleteCharAt(sb.lastIndexOf(","));
-      sb.append("}").append("\n");
-    } else if (node.getType() == TYPE.STRING) {
-      sb.append(helpName(father,node.getName()))
-              .append("\"")
-              .append(node.getRandomService().next())
-              .append("\"");
-    } else if (node.getType() == TYPE.LONG
-            || node.getType() == TYPE.INT
-            || node.getType() == TYPE.DOUBLE
-            || node.getType() == TYPE.BOOLEAN) {
-      sb.append(helpName(father,node.getName())).append(node.getRandomService().next().toString());
-    } else if (node.getType() == TYPE.NULL) {
-      sb.append(helpName(father,node.getName())).append("null");
-    } else if (node.getType() == TYPE.ARRAY) {
-      sb.append(helpName(father,node.getName())).append("[");
-      int size = (int) node.getRandomService().next();
-      while (size-- > 0) {
-        toJsonStr(node,node.getNexts().get(0), sb);
-        sb.append(",");
-      }
-      sb.deleteCharAt(sb.lastIndexOf(","));
-      sb.append("]");
-    }
-  }
-
-  private static String helpName(SugarJsonNode father,String name) {
-    if(father!=null&&TYPE.ARRAY.equals(father.getType()))return "";
-    return "\"" + name + "\":";
-  }
 
   private void flushTree() {
     treeGrid.removeAllColumns();
