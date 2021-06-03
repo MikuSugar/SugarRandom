@@ -10,8 +10,12 @@ public class ServiceName {
   public static final String RANDOM_LONG = "随机范围的整数（Long）";
 
   public static final String RANDOM_STR = "指定列表的随机字符值（String）";
+
   public static final String RANDOM_OBJ = "随机对象";
 
-  public static final String[] values = {DEFAULT_CHINA_CITY, RANDOM_INT, RANDOM_LONG, RANDOM_STR,RANDOM_OBJ};
+  public static final String RANDOM_ARRAY_LEN = "随机数组长度";
 
+  public static final String[] values = {
+    DEFAULT_CHINA_CITY, RANDOM_INT, RANDOM_LONG, RANDOM_STR, RANDOM_OBJ, RANDOM_ARRAY_LEN
+  };
 }
