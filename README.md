@@ -15,7 +15,7 @@ Randomly generated data tool
 
 + 结果下载
 
-  ![结果下载](https://cdn.jsdelivr.net/gh/mikusugar/PictureBed@master/uPic/2021/06/QQ20210603-234752-HD.gif)
+  ![结果](https://cdn.jsdelivr.net/gh/mikusugar/PictureBed@master/uPic/2021/06/结果.gif)
 
 ## 使用说明
 
