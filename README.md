@@ -15,7 +15,7 @@ Randomly generated data tool
 
 + 结果下载
 
-  ![QQ20210603-234752-HD](/var/folders/8d/55sbwbgn5z3072zy_7z1hft00000gn/T/com.sindresorhus.Gifski/TemporaryItems/NSIRD_Gifski_wiFr5w/QQ20210603-234752-HD.gif)
+  ![结果下载](https://cdn.jsdelivr.net/gh/mikusugar/PictureBed@master/uPic/2021/06/QQ20210603-234752-HD.gif)
 
 ## 使用说明
 
