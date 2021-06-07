@@ -11,7 +11,7 @@ import java.util.Random;
 @Service(ServiceName.RANDOM_CN_NAME)
 public class RandomCNName extends AbstractRandomService<String> {
   @Override
-  public RandomUtilInterface<String> createRandomUtilInterface(String input) {
+  protected RandomUtilInterface<String> createRandomUtilInterface(String input) {
 
     if(input.isEmpty()){
       return () -> {

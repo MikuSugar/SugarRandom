@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 public class RandomInt extends AbstractRandomService<Integer> {
 
   @Override
-  public RandomUtilInterface<Integer> createRandomUtilInterface(String input) {
+  protected RandomUtilInterface<Integer> createRandomUtilInterface(String input) {
     val arr = parse(input);
     int x = arr[0], y = arr[1], z = arr[2];
     if (z == 0) return RandomUtil.getRandomInt(x, y);

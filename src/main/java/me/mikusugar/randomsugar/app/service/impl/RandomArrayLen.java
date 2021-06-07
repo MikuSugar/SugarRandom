@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 @Service(ServiceName.RANDOM_ARRAY_LEN)
 public class RandomArrayLen extends AbstractRandomService<Integer> {
   @Override
-  public RandomUtilInterface<Integer> createRandomUtilInterface(String input) {
+  protected RandomUtilInterface<Integer> createRandomUtilInterface(String input) {
     val ins=parse(input);
     if(ins.length==1)return () -> ins[0];
     else return RandomUtil.getRandomInt(ins[0], ins[1]);

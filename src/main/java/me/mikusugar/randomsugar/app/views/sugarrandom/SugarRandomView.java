@@ -90,7 +90,7 @@ public class SugarRandomView extends HorizontalLayout {
                     .randomService(
                         randomServiceMap
                             .get(randomType.getValue())
-                            .createRandomUtilInterface(randomInfo.getValue()))
+                            .createRandomCoreService(randomInfo.getValue()))
                     .desc(randomServiceMap.get(randomType.getValue()).helpText())
                     .build();
             map.get(fieldFather.getValue()).getNexts().add(node);
@@ -174,7 +174,7 @@ public class SugarRandomView extends HorizontalLayout {
     int size = number.getValue().intValue();
     System.out.println(size);
     while (size-- > 0) {
-      SugarJsonUtils.toJsonStr(null,rootNode, res);
+      SugarJsonUtils.toJsonStr(null, rootNode, res);
       res.append(",").append("\n");
     }
     res.deleteCharAt(res.lastIndexOf(","));
@@ -186,13 +186,21 @@ public class SugarRandomView extends HorizontalLayout {
     return null;
   }
 
-
   private void flushTree() {
     treeGrid.removeAllColumns();
     treeGrid.setItems(Collections.singletonList(rootNode), SugarJsonNode::getNexts);
     treeGrid.addHierarchyColumn(SugarJsonNode::getName).setHeader("字段名");
     treeGrid.addColumn(SugarJsonNode::getType).setHeader("类型");
-    treeGrid.addColumn(SugarJsonNode::getDesc).setHeader("描述");
+    treeGrid
+        .addColumn(
+            sugarJsonNode -> {
+              if (sugarJsonNode == null
+                  || sugarJsonNode.getRandomService() == null
+                  || sugarJsonNode.getRandomService().getInput() == null) return "没有配置";
+              return sugarJsonNode.getRandomService().getInput();
+            })
+        .setHeader("参数配置");
+    treeGrid.addColumn(SugarJsonNode::getDesc).setHeader("参数说明");
   }
 
   private HorizontalLayout createHorizontalLayout() {

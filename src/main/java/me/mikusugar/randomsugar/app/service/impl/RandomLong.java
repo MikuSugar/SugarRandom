@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 public class RandomLong extends AbstractRandomService<Long> {
 
   @Override
-  public RandomUtilInterface<Long> createRandomUtilInterface(String input) {
+  protected RandomUtilInterface<Long> createRandomUtilInterface(String input) {
     val args = parse(input);
     if (args[2] == 0) return RandomUtil.getRandomLong(args[0], args[1]);
     return RandomUtil.getRandomGaussianLong(args[0], args[1]);

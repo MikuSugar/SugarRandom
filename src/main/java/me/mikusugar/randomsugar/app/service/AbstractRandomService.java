@@ -17,7 +17,12 @@ public  abstract class  AbstractRandomService<T> {
     /**
      * 生成随机造数核心
      */
-    public abstract RandomUtilInterface<T> createRandomUtilInterface(String input);
+    public  RandomCoreService<T> createRandomCoreService(String input){
+        return new RandomCoreService<>(input,createRandomUtilInterface(input));
+    }
+
+
+    protected abstract RandomUtilInterface<T> createRandomUtilInterface(String input);
 
     /**
      * 提示信息

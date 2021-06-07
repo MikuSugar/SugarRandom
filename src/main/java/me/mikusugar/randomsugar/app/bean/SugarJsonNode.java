@@ -3,6 +3,7 @@ package me.mikusugar.randomsugar.app.bean;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.SuperBuilder;
+import me.mikusugar.randomsugar.app.service.RandomCoreService;
 import me.mikusugar.randomsugar.app.utils.RandomUtilInterface;
 
 import java.util.ArrayList;
@@ -30,7 +31,7 @@ public class SugarJsonNode {
 
   private String desc;
 
-  private RandomUtilInterface randomService;
+  private RandomCoreService randomService;
 
   @Builder.Default private List<SugarJsonNode> nexts = new ArrayList<>();
 }

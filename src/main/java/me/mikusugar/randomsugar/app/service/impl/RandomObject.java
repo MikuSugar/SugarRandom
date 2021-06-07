@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 public class RandomObject extends AbstractRandomService<Object> {
 
     @Override
-    public RandomUtilInterface<Object> createRandomUtilInterface(String input) {
+    protected RandomUtilInterface<Object> createRandomUtilInterface(String input) {
         return null;
     }
 

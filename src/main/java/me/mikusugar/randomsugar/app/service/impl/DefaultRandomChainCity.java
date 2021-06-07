@@ -62,7 +62,7 @@ public class DefaultRandomChainCity extends AbstractRandomService<String> {
   }
 
   @Override
-  public RandomUtilInterface<String> createRandomUtilInterface(String input) {
+  protected  RandomUtilInterface<String> createRandomUtilInterface(String input) {
     return random;
   }
 
