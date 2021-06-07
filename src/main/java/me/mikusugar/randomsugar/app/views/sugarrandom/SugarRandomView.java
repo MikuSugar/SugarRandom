@@ -6,6 +6,7 @@ import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Anchor;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.NumberField;
@@ -49,11 +50,13 @@ public class SugarRandomView extends HorizontalLayout {
   private Select<String> randomType;
   private TextArea randomInfo;
   private Button next;
+  private Label label;
   private TreeGrid<SugarJsonNode> treeGrid;
   private NumberField number;
   private Button start;
   private Map<String, SugarJsonNode> map;
   private SugarJsonNode rootNode;
+  private TextArea area;
 
   @Autowired private Map<String, AbstractRandomService> randomServiceMap;
 
@@ -106,6 +109,8 @@ public class SugarRandomView extends HorizontalLayout {
                 && map.containsKey(fieldFather.getValue());
           }
         });
+
+    treeGrid.addItemClickListener(e-> area.setValue("参数说明："+e.getItem().getDesc()));
   }
 
   /** 界面初始化 */
@@ -138,6 +143,13 @@ public class SugarRandomView extends HorizontalLayout {
     randomLayout.setVerticalComponentAlignment(Alignment.END, randomInfo);
     add(randomLayout);
 
+    final HorizontalLayout treeName = createHorizontalLayout();
+    label=new Label("结构预览");
+    label.setWidthFull();
+    treeName.add(label);
+    treeName.setVerticalComponentAlignment(Alignment.END,label);
+    add(treeName);
+
     HorizontalLayout treeLayout = createHorizontalLayout();
     treeGrid = new TreeGrid<>();
     treeGrid.setWidthFull();
@@ -153,19 +165,22 @@ public class SugarRandomView extends HorizontalLayout {
     number.setMax(10000);
     number.setLabel("生成条数");
     start = new Button("开始");
+    area = new TextArea("详细信息");
+    area.setWidthFull();
+    area.setReadOnly(true);
     StreamResource href = new StreamResource("download.json", this::getInputStream);
     href.setCacheTime(0);
     Anchor download = new Anchor(href, "");
     download.getElement().setAttribute("开始", true);
     download.add(start);
 
-    startLayout.add(number, download);
-    startLayout.setVerticalComponentAlignment(Alignment.END, number, download);
+    startLayout.add(area, number, download);
+    startLayout.setVerticalComponentAlignment(Alignment.END, area, number, download);
     add(startLayout);
 
     addClassName("sugar-random-view");
     setVerticalComponentAlignment(
-        Alignment.END, top, fieldLayout, randomLayout, treeLayout, startLayout);
+        Alignment.END, top, fieldLayout, randomLayout, treeName ,treeLayout, startLayout);
     flushTree();
   }
 

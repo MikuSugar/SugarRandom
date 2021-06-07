@@ -1,5 +1,7 @@
 package me.mikusugar.randomsugar.app.utils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import me.mikusugar.randomsugar.app.bean.SugarJsonNode;
 
 public class SugarJsonUtils {
@@ -42,5 +44,18 @@ public class SugarJsonUtils {
     private static String helpName(SugarJsonNode father,String name) {
         if(father!=null&& SugarJsonNode.TYPE.ARRAY.equals(father.getType()))return "";
         return "\"" + name + "\":";
+    }
+
+    public static String json2PrettyFormat(String json) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.writerWithDefaultPrettyPrinter()
+                    .writeValueAsString(
+                            mapper.readValue(json, Object.class)
+                    );
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return json;
+        }
     }
 }
