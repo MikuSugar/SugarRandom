@@ -19,7 +19,6 @@ import com.vaadin.flow.router.RouteAlias;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import com.vaadin.flow.server.StreamResource;
@@ -165,7 +164,7 @@ public class SugarRandomView extends HorizontalLayout {
     number.setMax(10000);
     number.setLabel("生成条数");
     start = new Button("开始");
-    area = new TextArea("详细信息");
+    area = new TextArea("参数配置说明");
     area.setWidthFull();
     area.setReadOnly(true);
     StreamResource href = new StreamResource("download.json", this::getInputStream);

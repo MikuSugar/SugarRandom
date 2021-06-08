@@ -17,6 +17,8 @@ public class ServiceName {
 
   public static final String RANDOM_CN_NAME = "随机中文姓名";
 
+  public static final String RANDOM_EMAIL = "随机邮箱";
+
   public static final String[] values = {
     DEFAULT_CHINA_CITY,
     RANDOM_INT,
@@ -24,6 +26,7 @@ public class ServiceName {
     RANDOM_STR,
     RANDOM_OBJ,
     RANDOM_ARRAY_LEN,
-    RANDOM_CN_NAME
+    RANDOM_CN_NAME,
+    RANDOM_EMAIL
   };
 }
