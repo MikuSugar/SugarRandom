@@ -1,5 +1,7 @@
 package me.mikusugar.randomsugar.app.constant;
 
+import java.util.Arrays;
+
 /** author: fangjie email: syfangjie@live.cn date: 2021/4/9 11:48 上午 */
 public class ServiceName {
 
@@ -21,15 +23,4 @@ public class ServiceName {
 
   public static final String RANDOM_CN_PHONE = "随机中国大陆手机号";
 
-  public static final String[] values = {
-    DEFAULT_CHINA_CITY,
-    RANDOM_INT,
-    RANDOM_LONG,
-    RANDOM_STR,
-    RANDOM_OBJ,
-    RANDOM_ARRAY_LEN,
-    RANDOM_CN_NAME,
-    RANDOM_EMAIL,
-    RANDOM_CN_PHONE
-  };
 }

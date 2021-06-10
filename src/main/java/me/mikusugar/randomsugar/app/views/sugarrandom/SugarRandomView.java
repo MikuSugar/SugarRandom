@@ -25,7 +25,7 @@ import com.vaadin.flow.server.StreamResource;
 import lombok.val;
 import me.mikusugar.randomsugar.app.bean.SugarJsonNode;
 import me.mikusugar.randomsugar.app.bean.SugarJsonNode.TYPE;
-import me.mikusugar.randomsugar.app.constant.ServiceName;
+import me.mikusugar.randomsugar.app.constant.ServiceNameValues;
 import me.mikusugar.randomsugar.app.service.AbstractRandomService;
 import me.mikusugar.randomsugar.app.utils.NotionUtils;
 import me.mikusugar.randomsugar.app.utils.SugarJsonUtils;
@@ -127,7 +127,7 @@ public class SugarRandomView extends HorizontalLayout {
     filedType.setItems(Arrays.stream(TYPE.values()).map(String::valueOf));
     randomType = new Select<>();
     randomType.setLabel("随机类型");
-    randomType.setItems(ServiceName.values);
+    randomType.setItems(ServiceNameValues.getValues());
     next = new Button("下一个");
     fieldLayout.add(fieldName, fieldFather, filedType, randomType, next);
     fieldLayout.setVerticalComponentAlignment(
