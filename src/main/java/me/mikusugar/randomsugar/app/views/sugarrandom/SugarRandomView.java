@@ -89,6 +89,7 @@ public class SugarRandomView extends HorizontalLayout {
                 SugarJsonNode.builder()
                     .name(fieldName.getValue())
                     .type(TYPE.valueOf(filedType.getValue()))
+                    .randomServiceName(randomType.getValue())
                     .randomService(
                         randomServiceMap
                             .get(randomType.getValue())
@@ -109,7 +110,7 @@ public class SugarRandomView extends HorizontalLayout {
           }
         });
 
-    treeGrid.addItemClickListener(e-> area.setValue("参数说明："+e.getItem().getDesc()));
+    treeGrid.addItemClickListener(e -> area.setValue("参数说明：" + e.getItem().getDesc()));
   }
 
   /** 界面初始化 */
@@ -143,10 +144,10 @@ public class SugarRandomView extends HorizontalLayout {
     add(randomLayout);
 
     final HorizontalLayout treeName = createHorizontalLayout();
-    label=new Label("结构预览");
+    label = new Label("结构预览");
     label.setWidthFull();
     treeName.add(label);
-    treeName.setVerticalComponentAlignment(Alignment.END,label);
+    treeName.setVerticalComponentAlignment(Alignment.END, label);
     add(treeName);
 
     HorizontalLayout treeLayout = createHorizontalLayout();
@@ -179,7 +180,7 @@ public class SugarRandomView extends HorizontalLayout {
 
     addClassName("sugar-random-view");
     setVerticalComponentAlignment(
-        Alignment.END, top, fieldLayout, randomLayout, treeName ,treeLayout, startLayout);
+        Alignment.END, top, fieldLayout, randomLayout, treeName, treeLayout, startLayout);
     flushTree();
   }
 
@@ -204,7 +205,8 @@ public class SugarRandomView extends HorizontalLayout {
     treeGrid.removeAllColumns();
     treeGrid.setItems(Collections.singletonList(rootNode), SugarJsonNode::getNexts);
     treeGrid.addHierarchyColumn(SugarJsonNode::getName).setHeader("字段名");
-    treeGrid.addColumn(SugarJsonNode::getType).setHeader("类型");
+    treeGrid.addColumn(SugarJsonNode::getType).setHeader("字段类型");
+    treeGrid.addColumn(SugarJsonNode::getRandomServiceName).setHeader("随机类型");
     treeGrid
         .addColumn(
             sugarJsonNode -> {

@@ -4,7 +4,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.SuperBuilder;
 import me.mikusugar.randomsugar.app.service.RandomCoreService;
-import me.mikusugar.randomsugar.app.utils.RandomUtilInterface;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +28,15 @@ public class SugarJsonNode {
 
   private String name;
 
+  /**
+   * 描述
+   */
   private String desc;
+
+  /**
+   * 随机服务名
+   */
+  private String randomServiceName;
 
   private RandomCoreService randomService;
 
