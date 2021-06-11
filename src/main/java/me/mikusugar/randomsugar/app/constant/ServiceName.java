@@ -1,6 +1,5 @@
 package me.mikusugar.randomsugar.app.constant;
 
-import java.util.Arrays;
 
 /** author: fangjie email: syfangjie@live.cn date: 2021/4/9 11:48 上午 */
 public class ServiceName {

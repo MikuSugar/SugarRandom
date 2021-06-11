@@ -1,5 +1,6 @@
 package me.mikusugar.randomsugar.app.views.sugarrandom;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.vaadin.flow.component.BlurNotifier.BlurEvent;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -25,9 +26,11 @@ import com.vaadin.flow.server.StreamResource;
 import lombok.val;
 import me.mikusugar.randomsugar.app.bean.SugarJsonNode;
 import me.mikusugar.randomsugar.app.bean.SugarJsonNode.TYPE;
+import me.mikusugar.randomsugar.app.constant.ServiceName;
 import me.mikusugar.randomsugar.app.constant.ServiceNameValues;
 import me.mikusugar.randomsugar.app.service.AbstractRandomService;
 import me.mikusugar.randomsugar.app.utils.NotionUtils;
+import me.mikusugar.randomsugar.app.utils.SugarJsonNodeSerialization;
 import me.mikusugar.randomsugar.app.utils.SugarJsonUtils;
 import me.mikusugar.randomsugar.app.views.main.MainView;
 import org.apache.commons.io.IOUtils;
@@ -60,7 +63,13 @@ public class SugarRandomView extends HorizontalLayout {
   @Autowired private Map<String, AbstractRandomService> randomServiceMap;
 
   public SugarRandomView() {
-    this.rootNode = SugarJsonNode.builder().name("root").type(TYPE.OBJECT).desc("默认根节点").build();
+    this.rootNode =
+        SugarJsonNode.builder()
+            .name("root")
+            .type(TYPE.OBJECT)
+            .desc("默认根节点")
+            .randomServiceName(ServiceName.RANDOM_OBJ)
+            .build();
     this.map = new HashMap<>();
     this.map.put("root", rootNode);
     initView();
