@@ -1,7 +1,6 @@
 package me.mikusugar.randomsugar.app.views.sugarrandom;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.vaadin.flow.component.BlurNotifier.BlurEvent;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
@@ -24,16 +23,19 @@ import java.util.*;
 
 import com.vaadin.flow.server.StreamResource;
 import lombok.val;
+import me.mikusugar.randomsugar.app.bean.ConfigSave;
 import me.mikusugar.randomsugar.app.bean.SugarJsonNode;
 import me.mikusugar.randomsugar.app.bean.SugarJsonNode.TYPE;
 import me.mikusugar.randomsugar.app.constant.ServiceName;
 import me.mikusugar.randomsugar.app.constant.ServiceNameValues;
 import me.mikusugar.randomsugar.app.service.AbstractRandomService;
+import me.mikusugar.randomsugar.app.service.ConfigSavaRepository;
 import me.mikusugar.randomsugar.app.utils.NotionUtils;
 import me.mikusugar.randomsugar.app.utils.SugarJsonNodeSerialization;
 import me.mikusugar.randomsugar.app.utils.SugarJsonUtils;
 import me.mikusugar.randomsugar.app.views.main.MainView;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +47,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class SugarRandomView extends HorizontalLayout {
 
   protected Logger log = LoggerFactory.getLogger(getClass());
+
+  private TextField configName;
+  private Button readConfig;
+  private Button saveConfig;
+  private Button delConfig;
 
   private TextField fieldName;
   private TextField fieldFather;
@@ -62,6 +69,8 @@ public class SugarRandomView extends HorizontalLayout {
 
   @Autowired private Map<String, AbstractRandomService> randomServiceMap;
 
+  @Autowired private ConfigSavaRepository configSavaRepository;
+
   public SugarRandomView() {
     this.rootNode =
         SugarJsonNode.builder()
@@ -78,13 +87,56 @@ public class SugarRandomView extends HorizontalLayout {
 
   private void even() {
 
+    readConfig.addClickListener( buttonClickEvent -> {
+      if(StringUtils.isEmpty(configName.getValue()))NotionUtils.defaultNotion("配置名为空！！！无法读取");
+      else {
+        final Optional<ConfigSave> savaRepositoryById = configSavaRepository.findById(configName.getValue());
+        if(savaRepositoryById.isPresent()){
+          try {
+            rootNode = SugarJsonNodeSerialization.read(savaRepositoryById.get().getJson(),randomServiceMap);
+            flushTree();
+            NotionUtils.defaultNotion("配置["+configName.getValue()+"]读取成功");
+          } catch (JsonProcessingException e) {
+            NotionUtils.defaultNotion("配置存在问题");
+            log.error(savaRepositoryById.get().getJson()+e);
+          }
+        }
+        else NotionUtils.defaultNotion("没有找到配置");
+      }
+    });
+
+    saveConfig.addClickListener( buttonClickEvent -> {
+      if(StringUtils.isEmpty(configName.getValue()))NotionUtils.defaultNotion("配置名为空！！！无法存储");
+      else {
+        try {
+          final String json = SugarJsonNodeSerialization.write(rootNode);
+          ConfigSave configSave = new ConfigSave();
+          configSave.setId(configName.getValue());
+          configSave.setJson(json);
+          configSavaRepository.save(configSave);
+          NotionUtils.defaultNotion("配置["+configName.getValue()+"]存储成功");
+        } catch (JsonProcessingException e) {
+          log.error(e.toString());
+        }
+      }
+    });
+
+    delConfig.addClickListener(buttonClickEvent -> {
+      if(StringUtils.isEmpty(configName.getValue()))NotionUtils.defaultNotion("配置名为空！！！无法删除");
+      else {
+        configSavaRepository.deleteById(configName.getValue());
+        NotionUtils.defaultNotion("配置["+configName.getValue()+"]删除成功");
+      }
+    });
+
     randomType.addBlurListener(
-        (ComponentEventListener<BlurEvent<Select<String>>>)
             event -> {
               AbstractRandomService randomService = randomServiceMap.get(randomType.getValue());
               if (randomService == null) return;
               randomInfo.setHelperText(randomService.helpText());
             });
+
+
 
     next.addClickListener(
         new ComponentEventListener<ClickEvent<Button>>() {
@@ -126,6 +178,17 @@ public class SugarRandomView extends HorizontalLayout {
   private void initView() {
     HorizontalLayout top = createHorizontalLayout();
     add(top);
+
+    final HorizontalLayout saveConfigLayout = createHorizontalLayout();
+    configName = new TextField("配置名");
+    readConfig = new Button("配置读取");
+    saveConfig = new Button("配置存储");
+    delConfig = new Button("删除配置");
+    saveConfigLayout.add(configName, readConfig, saveConfig, delConfig);
+    saveConfigLayout.setVerticalComponentAlignment(
+        Alignment.END, configName, readConfig, saveConfig, delConfig);
+    add(saveConfigLayout);
+
     HorizontalLayout fieldLayout = createHorizontalLayout();
     fieldName = new TextField();
     fieldName.setLabel("字段名");
@@ -189,7 +252,14 @@ public class SugarRandomView extends HorizontalLayout {
 
     addClassName("sugar-random-view");
     setVerticalComponentAlignment(
-        Alignment.END, top, fieldLayout, randomLayout, treeName, treeLayout, startLayout);
+        Alignment.END,
+        top,
+        saveConfigLayout,
+        fieldLayout,
+        randomLayout,
+        treeName,
+        treeLayout,
+        startLayout);
     flushTree();
   }
 
@@ -226,6 +296,14 @@ public class SugarRandomView extends HorizontalLayout {
             })
         .setHeader("参数配置");
     treeGrid.addColumn(SugarJsonNode::getDesc).setHeader("参数说明");
+    map.clear();
+    dfsAddMap(rootNode);
+  }
+
+  private void dfsAddMap(SugarJsonNode node) {
+    if(node==null)return;
+    map.put(node.getName(),node);
+    node.getNexts().forEach(this::dfsAddMap);
   }
 
   private HorizontalLayout createHorizontalLayout() {
