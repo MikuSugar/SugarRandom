@@ -6,7 +6,6 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
-import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -30,7 +29,6 @@ import com.vaadin.flow.component.dependency.CssImport;
  */
 @PWA(name = "SugarRandom", shortName = "SugarRandom", enableInstallPrompt = false)
 @JsModule("./styles/shared-styles.js")
-@Theme(value = Lumo.class, variant = Lumo.DARK)
 @CssImport("./views/main/main-view.css")
 public class MainView extends AppLayout {
 
@@ -47,14 +45,14 @@ public class MainView extends AppLayout {
     private Component createHeaderContent() {
         HorizontalLayout layout = new HorizontalLayout();
         layout.setId("header");
-        layout.getThemeList().set("dark", true);
+        layout.getThemeList();
         layout.setWidthFull();
         layout.setSpacing(false);
         layout.setAlignItems(FlexComponent.Alignment.CENTER);
         layout.add(new DrawerToggle());
         viewTitle = new H1();
         layout.add(viewTitle);
-        layout.add(new Avatar());
+//        layout.add(new Avatar());
         return layout;
     }
 

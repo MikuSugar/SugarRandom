@@ -136,8 +136,6 @@ public class SugarRandomView extends HorizontalLayout {
               randomInfo.setHelperText(randomService.helpText());
             });
 
-
-
     next.addClickListener(
         new ComponentEventListener<ClickEvent<Button>>() {
           @Override
@@ -160,6 +158,7 @@ public class SugarRandomView extends HorizontalLayout {
             map.get(fieldFather.getValue()).getNexts().add(node);
             map.put(node.getName(), node);
             flushTree();
+            NotionUtils.defaultNotion("字段配置添加成功～");
           }
 
           private boolean checkNext() {
