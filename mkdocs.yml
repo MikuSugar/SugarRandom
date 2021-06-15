@@ -1,5 +1,8 @@
 site_name: SugarRandom
+copyright: Copyright &copy; 2021-2022 SugarRandom
 theme:
+  language: zh
+  favicon: assets/logo.png
   name: material
   features:
     - navigation.tabs
@@ -17,3 +20,5 @@ nav:
   - 开发:
       - 简介: develop/index.md
       - 新的随机类型: develop/newtype.md
+extra:
+  disqus: mikusugar-me
