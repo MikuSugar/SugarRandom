@@ -22,7 +22,7 @@ public class RandomString extends AbstractRandomService<String> {
       if (str.contains(":")) {
         val split = str.split(":");
         map.put(split[0], Integer.parseInt(split[1]));
-      } else map.put(str, 0);
+      } else map.put(str, 1);
     }
     return RandomUtil.getRandomWeightData(map);
   }
