@@ -1,0 +1,17 @@
+site_name: SugarRandom
+theme:
+  name: material
+  features:
+    - navigation.tabs
+  logo: assets/logo.png
+repo_url: https://github.com/MikuSugar/SugarRandom
+repo_name: MikuSugar/SugarRandom
+site_description:  SugarRandom官方网站
+nav:
+  - 主页: index.md
+  - 安装:
+      - 简介: setup/index.md
+  - 使用:
+      - 简介: usage/index.md
+  - 开发:
+      - 简介: develop/index.md
