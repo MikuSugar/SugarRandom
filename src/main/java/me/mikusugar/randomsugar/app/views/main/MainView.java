@@ -16,12 +16,10 @@ import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.component.tabs.TabsVariant;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.PWA;
-import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.router.PageTitle;
 import me.mikusugar.randomsugar.app.views.sugarrandom.SugarRandomView;
 import me.mikusugar.randomsugar.app.views.about.AboutView;
 import com.vaadin.flow.component.dependency.JsModule;
-import com.vaadin.flow.theme.lumo.Lumo;
 import com.vaadin.flow.component.dependency.CssImport;
 
 /**
