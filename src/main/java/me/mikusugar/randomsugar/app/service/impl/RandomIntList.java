@@ -11,20 +11,20 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.Map;
 
-@Service(ServiceName.RANDOM_STR)
-public class RandomString extends AbstractRandomService<String> {
+@Service(ServiceName.RANDOM_INT_LIST)
+public class RandomIntList extends AbstractRandomService<Integer> {
 
   @Override
-  protected RandomUtilInterface<String> createRandomUtilInterface(String input) {
-    val strs = input.split(",");
-    Map<String, Integer> map = new HashMap<>();
-    for (String str : strs) {
-      if (str.contains(":")) {
-        val split = str.split(":");
-        map.put(split[0], Integer.parseInt(split[1]));
-      } else map.put(str,1);
-    }
-    return RandomUtil.getRandomWeightData(map);
+  protected RandomUtilInterface<Integer> createRandomUtilInterface(String input) {
+      val strs = input.split(",");
+      Map<Integer, Integer> map = new HashMap<>();
+      for (String str : strs) {
+          if (str.contains(":")) {
+              val split = str.split(":");
+              map.put(Integer.parseInt(split[0]), Integer.parseInt(split[1]));
+          } else map.put(Integer.parseInt(str), 1);
+      }
+      return RandomUtil.getRandomWeightData(map);
   }
 
   @Override
@@ -34,7 +34,7 @@ public class RandomString extends AbstractRandomService<String> {
 
   @Override
   public boolean check(String type, String input) {
-    if (!SugarJsonNode.TYPE.STRING.toString().equals(type)) return false;
+    if (!SugarJsonNode.TYPE.INT.toString().equals(type)) return false;
     try {
       val strs = input.split(",");
       for (String s : strs) {
@@ -42,6 +42,9 @@ public class RandomString extends AbstractRandomService<String> {
           val strings = s.split(":");
           if (strings.length != 2) return false;
           int v = Integer.parseInt(strings[1]);
+          int key = Integer.parseInt(strings[0]);
+        } else {
+          Integer.parseInt(s);
         }
       }
     } catch (Exception e) {

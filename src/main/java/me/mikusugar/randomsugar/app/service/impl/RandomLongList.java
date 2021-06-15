@@ -11,18 +11,17 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.Map;
 
-@Service(ServiceName.RANDOM_STR)
-public class RandomString extends AbstractRandomService<String> {
-
+@Service(ServiceName.RANDOM_LONG_LIST)
+public class RandomLongList extends AbstractRandomService<Long> {
   @Override
-  protected RandomUtilInterface<String> createRandomUtilInterface(String input) {
+  protected RandomUtilInterface<Long> createRandomUtilInterface(String input) {
     val strs = input.split(",");
-    Map<String, Integer> map = new HashMap<>();
+    Map<Long, Integer> map = new HashMap<>();
     for (String str : strs) {
       if (str.contains(":")) {
         val split = str.split(":");
-        map.put(split[0], Integer.parseInt(split[1]));
-      } else map.put(str,1);
+        map.put(Long.parseLong(split[0]), Integer.parseInt(split[1]));
+      } else map.put(Long.parseLong(str), 1);
     }
     return RandomUtil.getRandomWeightData(map);
   }
@@ -34,14 +33,17 @@ public class RandomString extends AbstractRandomService<String> {
 
   @Override
   public boolean check(String type, String input) {
-    if (!SugarJsonNode.TYPE.STRING.toString().equals(type)) return false;
+    if (!SugarJsonNode.TYPE.LONG.toString().equals(type)) return false;
     try {
       val strs = input.split(",");
       for (String s : strs) {
         if (s.contains(":")) {
           val strings = s.split(":");
           if (strings.length != 2) return false;
-          int v = Integer.parseInt(strings[1]);
+          Integer.parseInt(strings[1]);
+          Long.parseLong(strings[0]);
+        } else {
+          Long.parseLong(s);
         }
       }
     } catch (Exception e) {

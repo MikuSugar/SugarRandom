@@ -22,4 +22,8 @@ public class ServiceName {
 
   public static final String RANDOM_CN_PHONE = "随机中国大陆手机号";
 
+  public static final String RANDOM_INT_LIST = "随机指定指定列表的整数（Int）";
+
+  public static final String RANDOM_LONG_LIST = "随机指定指定列表的整数（Long）";
+
 }
