@@ -12,6 +12,8 @@ nav:
   - 安装:
       - 简介: setup/index.md
   - 使用:
-      - 简介: usage/index.md
+      - 快速使用: usage/index.md
+      - 配置: usage/config.md
   - 开发:
       - 简介: develop/index.md
+      - 新的随机类型: develop/newtype.md
