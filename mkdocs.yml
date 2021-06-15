@@ -20,5 +20,3 @@ nav:
   - 开发:
       - 简介: develop/index.md
       - 新的随机类型: develop/newtype.md
-extra:
-  disqus: mikusugar-me
