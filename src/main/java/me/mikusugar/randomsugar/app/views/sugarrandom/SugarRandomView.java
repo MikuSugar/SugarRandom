@@ -182,6 +182,14 @@ public class SugarRandomView extends HorizontalLayout {
         });
 
     treeGrid.addItemClickListener(e -> area.setValue("参数说明：" + e.getItem().getDesc()));
+
+    resPreButton.addClickListener(e->{
+      final StringBuilder res = new StringBuilder();
+      SugarJsonUtils.toJsonStr(null, rootNode, res);
+      final String prettyFormatJson = SugarJsonUtils.json2PrettyFormat(res.toString());
+      resPreTextArea.setValue(prettyFormatJson);
+    });
+
   }
 
   /** 界面初始化 */
