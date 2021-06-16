@@ -5,6 +5,7 @@ import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -67,6 +68,11 @@ public class SugarRandomView extends HorizontalLayout {
   private SugarJsonNode rootNode;
   private TextArea area;
 
+  // 结果预览
+  private Dialog resPreDialog;
+  private TextArea resPreTextArea;
+  private Button resPreButton;
+
   @Autowired private Map<String, AbstractRandomService> randomServiceMap;
 
   @Autowired private ConfigSavaRepository configSavaRepository;
@@ -87,54 +93,59 @@ public class SugarRandomView extends HorizontalLayout {
 
   private void even() {
 
-    readConfig.addClickListener( buttonClickEvent -> {
-      if(StringUtils.isEmpty(configName.getValue()))NotionUtils.defaultNotion("配置名为空！！！无法读取");
-      else {
-        final Optional<ConfigSave> savaRepositoryById = configSavaRepository.findById(configName.getValue());
-        if(savaRepositoryById.isPresent()){
-          try {
-            rootNode = SugarJsonNodeSerialization.read(savaRepositoryById.get().getJson(),randomServiceMap);
-            flushTree();
-            NotionUtils.defaultNotion("配置["+configName.getValue()+"]读取成功");
-          } catch (JsonProcessingException e) {
-            NotionUtils.defaultNotion("配置存在问题");
-            log.error(savaRepositoryById.get().getJson()+e);
+    readConfig.addClickListener(
+        buttonClickEvent -> {
+          if (StringUtils.isEmpty(configName.getValue())) NotionUtils.defaultNotion("配置名为空！！！无法读取");
+          else {
+            final Optional<ConfigSave> savaRepositoryById =
+                configSavaRepository.findById(configName.getValue());
+            if (savaRepositoryById.isPresent()) {
+              try {
+                rootNode =
+                    SugarJsonNodeSerialization.read(
+                        savaRepositoryById.get().getJson(), randomServiceMap);
+                flushTree();
+                NotionUtils.defaultNotion("配置[" + configName.getValue() + "]读取成功");
+              } catch (JsonProcessingException e) {
+                NotionUtils.defaultNotion("配置存在问题");
+                log.error(savaRepositoryById.get().getJson() + e);
+              }
+            } else NotionUtils.defaultNotion("没有找到配置");
           }
-        }
-        else NotionUtils.defaultNotion("没有找到配置");
-      }
-    });
+        });
 
-    saveConfig.addClickListener( buttonClickEvent -> {
-      if(StringUtils.isEmpty(configName.getValue()))NotionUtils.defaultNotion("配置名为空！！！无法存储");
-      else {
-        try {
-          final String json = SugarJsonNodeSerialization.write(rootNode);
-          ConfigSave configSave = new ConfigSave();
-          configSave.setId(configName.getValue());
-          configSave.setJson(json);
-          configSavaRepository.save(configSave);
-          NotionUtils.defaultNotion("配置["+configName.getValue()+"]存储成功");
-        } catch (JsonProcessingException e) {
-          log.error(e.toString());
-        }
-      }
-    });
+    saveConfig.addClickListener(
+        buttonClickEvent -> {
+          if (StringUtils.isEmpty(configName.getValue())) NotionUtils.defaultNotion("配置名为空！！！无法存储");
+          else {
+            try {
+              final String json = SugarJsonNodeSerialization.write(rootNode);
+              ConfigSave configSave = new ConfigSave();
+              configSave.setId(configName.getValue());
+              configSave.setJson(json);
+              configSavaRepository.save(configSave);
+              NotionUtils.defaultNotion("配置[" + configName.getValue() + "]存储成功");
+            } catch (JsonProcessingException e) {
+              log.error(e.toString());
+            }
+          }
+        });
 
-    delConfig.addClickListener(buttonClickEvent -> {
-      if(StringUtils.isEmpty(configName.getValue()))NotionUtils.defaultNotion("配置名为空！！！无法删除");
-      else {
-        configSavaRepository.deleteById(configName.getValue());
-        NotionUtils.defaultNotion("配置["+configName.getValue()+"]删除成功");
-      }
-    });
+    delConfig.addClickListener(
+        buttonClickEvent -> {
+          if (StringUtils.isEmpty(configName.getValue())) NotionUtils.defaultNotion("配置名为空！！！无法删除");
+          else {
+            configSavaRepository.deleteById(configName.getValue());
+            NotionUtils.defaultNotion("配置[" + configName.getValue() + "]删除成功");
+          }
+        });
 
     randomType.addBlurListener(
-            event -> {
-              AbstractRandomService randomService = randomServiceMap.get(randomType.getValue());
-              if (randomService == null) return;
-              randomInfo.setHelperText(randomService.helpText());
-            });
+        event -> {
+          AbstractRandomService randomService = randomServiceMap.get(randomType.getValue());
+          if (randomService == null) return;
+          randomInfo.setHelperText(randomService.helpText());
+        });
 
     next.addClickListener(
         new ComponentEventListener<ClickEvent<Button>>() {
@@ -171,6 +182,14 @@ public class SugarRandomView extends HorizontalLayout {
         });
 
     treeGrid.addItemClickListener(e -> area.setValue("参数说明：" + e.getItem().getDesc()));
+
+    resPreButton.addClickListener(e->{
+      final StringBuilder res = new StringBuilder();
+      SugarJsonUtils.toJsonStr(null, rootNode, res);
+      final String prettyFormatJson = SugarJsonUtils.json2PrettyFormat(res.toString());
+      resPreTextArea.setValue(prettyFormatJson);
+    });
+
   }
 
   /** 界面初始化 */
@@ -244,9 +263,19 @@ public class SugarRandomView extends HorizontalLayout {
     Anchor download = new Anchor(href, "");
     download.getElement().setAttribute("开始", true);
     download.add(start);
-
-    startLayout.add(area, number, download);
-    startLayout.setVerticalComponentAlignment(Alignment.END, area, number, download);
+    resPreDialog = new Dialog();
+    resPreTextArea = new TextArea("结果：");
+    resPreTextArea.setWidthFull();
+    resPreTextArea.setHeight("90%");
+    resPreDialog.add(resPreTextArea);
+    final Button closePreButton = new Button("关闭", e -> resPreDialog.close());
+    closePreButton.setWidthFull();
+    resPreDialog.add(closePreButton);
+    resPreDialog.setHeight("80%");
+    resPreDialog.setWidth("80%");
+    resPreButton = new Button("预览", e -> resPreDialog.open());
+    startLayout.add(area, resPreButton, number, download);
+    startLayout.setVerticalComponentAlignment(Alignment.END, area, resPreButton, number, download);
     add(startLayout);
 
     addClassName("sugar-random-view");
@@ -300,8 +329,8 @@ public class SugarRandomView extends HorizontalLayout {
   }
 
   private void dfsAddMap(SugarJsonNode node) {
-    if(node==null)return;
-    map.put(node.getName(),node);
+    if (node == null) return;
+    map.put(node.getName(), node);
     node.getNexts().forEach(this::dfsAddMap);
   }
 

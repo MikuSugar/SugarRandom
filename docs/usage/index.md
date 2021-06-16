@@ -40,6 +40,12 @@
 
   点击下一个
 
++ 结果预览
+
+  ![结果预览](https://cdn.jsdelivr.net/gh/mikusugar/PictureBed@master/uPic/2021/06/结果预览.gif)
+
+  如上图，点击**预览**即可预览当前配置生成效果。
+
 + 结构预览
 
   ![VGOsSC](https://cdn.jsdelivr.net/gh/mikusugar/PictureBed@master/uPic/2021/06/VGOsSC.png)

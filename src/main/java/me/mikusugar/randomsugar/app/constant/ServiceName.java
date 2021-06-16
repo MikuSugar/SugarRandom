@@ -26,4 +26,6 @@ public class ServiceName {
 
   public static final String RANDOM_LONG_LIST = "随机指定指定列表的整数（Long）";
 
+  public static final String RANDOM_IP = "随机生成IP";
+
 }
