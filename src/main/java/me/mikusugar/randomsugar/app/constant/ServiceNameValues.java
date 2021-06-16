@@ -1,6 +1,7 @@
 package me.mikusugar.randomsugar.app.constant;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 
 public class ServiceNameValues {
 
@@ -22,6 +23,10 @@ public class ServiceNameValues {
         }
       }
     }
+    Arrays.sort(values, (o1, o2) -> {
+      if(o1.length()==o2.length())return o1.compareTo(o2);
+      return Integer.compare(o1.length(),o2.length());
+    });
     return values;
   }
 }
