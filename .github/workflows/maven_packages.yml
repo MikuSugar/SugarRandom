@@ -18,6 +18,8 @@ jobs:
           java-version: '8'
           distribution: 'adopt'
       - name: Publish package
-        run: cd sugar_random_core & mvn --batch-mode deploy
+        run:
+          cd sugar_random_core
+          mvn --batch-mode deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
