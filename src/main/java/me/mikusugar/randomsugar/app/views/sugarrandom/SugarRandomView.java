@@ -24,16 +24,15 @@ import java.util.*;
 
 import com.vaadin.flow.server.StreamResource;
 import lombok.val;
-import me.mikusugar.randomsugar.app.bean.ConfigSave;
-import me.mikusugar.randomsugar.app.bean.SugarJsonNode;
-import me.mikusugar.randomsugar.app.bean.SugarJsonNode.TYPE;
-import me.mikusugar.randomsugar.app.constant.ServiceName;
-import me.mikusugar.randomsugar.app.constant.ServiceNameValues;
-import me.mikusugar.randomsugar.app.service.AbstractRandomService;
-import me.mikusugar.randomsugar.app.service.ConfigSavaRepository;
+import me.mikusugar.random.core.bean.ConfigSave;
+import me.mikusugar.random.core.bean.SugarJsonNode;
+import me.mikusugar.random.core.constant.ServiceName;
+import me.mikusugar.random.core.constant.ServiceNameValues;
+import me.mikusugar.random.core.service.AbstractRandomService;
+import me.mikusugar.random.core.service.ConfigSavaRepository;
+import me.mikusugar.random.core.utils.SugarJsonNodeSerialization;
+import me.mikusugar.random.core.utils.SugarJsonUtils;
 import me.mikusugar.randomsugar.app.utils.NotionUtils;
-import me.mikusugar.randomsugar.app.utils.SugarJsonNodeSerialization;
-import me.mikusugar.randomsugar.app.utils.SugarJsonUtils;
 import me.mikusugar.randomsugar.app.views.main.MainView;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -81,7 +80,7 @@ public class SugarRandomView extends HorizontalLayout {
     this.rootNode =
         SugarJsonNode.builder()
             .name("root")
-            .type(TYPE.OBJECT)
+            .type(SugarJsonNode.TYPE.OBJECT)
             .desc("默认根节点")
             .randomServiceName(ServiceName.RANDOM_OBJ)
             .build();
@@ -158,7 +157,7 @@ public class SugarRandomView extends HorizontalLayout {
             val node =
                 SugarJsonNode.builder()
                     .name(fieldName.getValue())
-                    .type(TYPE.valueOf(filedType.getValue()))
+                    .type(SugarJsonNode.TYPE.valueOf(filedType.getValue()))
                     .randomServiceName(randomType.getValue())
                     .randomService(
                         randomServiceMap
@@ -215,7 +214,7 @@ public class SugarRandomView extends HorizontalLayout {
     fieldFather.setValue("root");
     filedType = new Select<>();
     filedType.setLabel("字段类型");
-    filedType.setItems(Arrays.stream(TYPE.values()).map(String::valueOf));
+    filedType.setItems(Arrays.stream(SugarJsonNode.TYPE.values()).map(String::valueOf));
     randomType = new Select<>();
     randomType.setLabel("随机类型");
     randomType.setItems(ServiceNameValues.getValues());
