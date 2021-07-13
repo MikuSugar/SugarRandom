@@ -14,9 +14,11 @@ nav:
   - 主页: index.md
   - 安装:
       - 简介: setup/index.md
-  - 使用:
-      - 快速使用: usage/index.md
-      - 配置: usage/config.md
+  - WEB使用:
+      - 快速使用: usage_web/index.md
+      - 配置: usage_web/config.md
+  - CLI使用:
+      - 快速使用: usage_cli/quick_cli.md
   - 开发:
       - 简介: develop/index.md
       - 新的随机类型: develop/newtype.md
