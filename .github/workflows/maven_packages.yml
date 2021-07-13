@@ -4,7 +4,8 @@ on:
     types: [created]
   push:
     branches:
-      - feature/add_cli
+      - develop
+      - master
 jobs:
   publish:
     runs-on: ubuntu-latest
