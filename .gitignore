@@ -27,7 +27,8 @@ hs_err_pid*
 .settings
 .project
 .classpath
-
+/sugar_random_cli/target/*
+*.lst
 *.iml
 .DS_Store
 
