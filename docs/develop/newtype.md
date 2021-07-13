@@ -1,4 +1,7 @@
 # 新的随机类型开发
+
+**以下所有改动均在 `sugar_random_core`上**
+
 ## 前言
 目前已有的随机类型有限
 
@@ -14,10 +17,11 @@
 
 为你的随机类型起个独一无二的名字吧
 
-在`me.mikusugar.randomsugar.app.constant`包下有一个类名为`ServiceName`
+在`me.mikusugar.random.core.constant`包下有一个类名为`ServiceName`
 
 ```java
-package me.mikusugar.randomsugar.app.constant;
+package me.mikusugar.random.core.constant;
+
 
 /** author: fangjie email: syfangjie@live.cn date: 2021/4/9 11:48 上午 */
 public class ServiceName {
@@ -44,6 +48,8 @@ public class ServiceName {
 
   public static final String RANDOM_LONG_LIST = "随机指定指定列表的整数（Long）";
 
+  public static final String RANDOM_IP = "随机生成IP";
+
 }
 
 ```
@@ -52,12 +58,12 @@ public class ServiceName {
 
 ### 随机逻辑
 
-只需要实现`me.mikusugar.randomsugar.app.service`下面的`AbstractRandomService`抽象类就👌了。
+只需要实现`me.mikusugar.random.core.service`下面的`AbstractRandomService`抽象类就👌了。
 
 ```java
-package me.mikusugar.randomsugar.app.service;
+package me.mikusugar.random.core.service;
 
-import me.mikusugar.randomsugar.app.utils.RandomUtilInterface;
+import me.mikusugar.random.core.utils.RandomUtilInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,7 +81,7 @@ public  abstract class  AbstractRandomService<T> {
      * 生成随机造数核心
      */
     public  RandomCoreService<T> createRandomCoreService(String input){
-        return new RandomCoreService<>(input,createRandomUtilInterface(input));
+        return new RandomCoreService<T>(input,createRandomUtilInterface(input));
     }
 
 
@@ -95,23 +101,26 @@ public  abstract class  AbstractRandomService<T> {
      */
     public abstract boolean check(String type,String input);
 
+
+
 }
+
 
 ```
 
-将实现类放在`me.mikusugar.randomsugar.app.service.impl`下。
+将实现类放在`me.mikusugar.random.core.service.impl`下。
 
 例如
 
 ```java
-package me.mikusugar.randomsugar.app.service.impl;
+package me.mikusugar.random.core.service.impl;
 
 import lombok.val;
-import me.mikusugar.randomsugar.app.bean.SugarJsonNode;
-import me.mikusugar.randomsugar.app.constant.ServiceName;
-import me.mikusugar.randomsugar.app.service.AbstractRandomService;
-import me.mikusugar.randomsugar.app.utils.RandomUtil;
-import me.mikusugar.randomsugar.app.utils.RandomUtilInterface;
+import me.mikusugar.random.core.bean.SugarJsonNode;
+import me.mikusugar.random.core.constant.ServiceName;
+import me.mikusugar.random.core.service.AbstractRandomService;
+import me.mikusugar.random.core.utils.RandomUtil;
+import me.mikusugar.random.core.utils.RandomUtilInterface;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -157,6 +166,7 @@ public class RandomString extends AbstractRandomService<String> {
     return true;
   }
 }
+
 ```
 
 **记得在Service注解里面绑定上一步取的随机类型名**～
@@ -165,7 +175,7 @@ public class RandomString extends AbstractRandomService<String> {
 
 ## 随机工具类
 
-`me.mikusugar.randomsugar.app.utils`包下有一个随机工具类（RandomUtil），如上面的例子就用了随机工具类中的权重随机生成方法（RandomUtil.getRandomWeightData）。
+`me.mikusugar.random.core.utils`包下有一个随机工具类（RandomUtil），如上面的例子就用了随机工具类中的权重随机生成方法（RandomUtil.getRandomWeightData）。
 
 希望这个工具类可以帮助到你～
 
