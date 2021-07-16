@@ -152,6 +152,24 @@ public class CliService {
         return "字段配置添加成功～";
     }
 
+    @ShellMethod(value = "删除字段，会同时删除该字段的所有子字段,无法删除root字段", group = "random")
+    public String delNode(String field) {
+        if (!map.containsKey(field)) return CliUtils.showField(field) + "不存在";
+        final SugarJsonNode father = CliUtils.findFather(rootNode, field);
+        final SugarJsonNode node = map.get(field);
+        dfsDelNode(node);
+        father.getNexts().remove(node);
+        return CliUtils.showField(field) + "已删除";
+    }
+
+    private void dfsDelNode(SugarJsonNode node) {
+        if (node.getNexts() != null) {
+            node.getNexts().forEach(next -> dfsDelNode(next));
+        }
+        map.remove(node.getName());
+    }
+
+
     @ShellMethod(value = "移除所有配置", group = "random")
     public String removeAll() {
         this.map.clear();
@@ -161,14 +179,14 @@ public class CliService {
 
     @ShellMethod(value = "生成文件到本地", group = "random")
     public String outFile(int num, String path) throws IOException {
-        final FileWriter out = new FileWriter(new File(path+".json"));
+        final FileWriter out = new FileWriter(new File(path + ".json"));
         int size = num;
-        while (size-->0) {
+        while (size-- > 0) {
             val res = new StringBuilder();
             SugarJsonUtils.toJsonStr(null, rootNode, res);
             out.write(res.toString());
-            if(size>0){
-                out.write(","+System.lineSeparator());
+            if (size > 0) {
+                out.write("," + System.lineSeparator());
             }
         }
         out.flush();
@@ -180,18 +198,17 @@ public class CliService {
     // group config
     ///////////////////////////////////////////////////////////////////////////
 
-    @ShellMethod(value = "配置读取",group = "config")
+    @ShellMethod(value = "配置读取", group = "config")
     public String read(String name) throws JsonProcessingException {
         final Optional<ConfigSave> savaRepositoryById =
                 configSavaRepository.findById(name);
         if (savaRepositoryById.isPresent()) {
-            this.rootNode=SugarJsonNodeSerialization.read(
-                    savaRepositoryById.get().getJson(),randomServiceMap);
+            this.rootNode = SugarJsonNodeSerialization.read(
+                    savaRepositoryById.get().getJson(), randomServiceMap);
             map.clear();
             dfsAddMap(this.rootNode);
             return "配置读取成功";
-        }
-        else return "配置名不存在！";
+        } else return "配置名不存在！";
     }
 
     private void dfsAddMap(SugarJsonNode node) {
@@ -200,9 +217,9 @@ public class CliService {
         node.getNexts().forEach(this::dfsAddMap);
     }
 
-    @ShellMethod(value="配置存储",group = "config")
+    @ShellMethod(value = "配置存储", group = "config")
     public String save(String name) throws JsonProcessingException {
-        if(name==null||name.trim().isEmpty()) {
+        if (name == null || name.trim().isEmpty()) {
             return "配置名为空，无法存储！";
         }
         final String json = SugarJsonNodeSerialization.write(rootNode);
@@ -213,9 +230,9 @@ public class CliService {
         return "配置存储成功";
     }
 
-    @ShellMethod(value = "配置删除",group = "config")
-    public String delConfig(String name){
-        if(name==null||name.trim().isEmpty()) {
+    @ShellMethod(value = "配置删除", group = "config")
+    public String delConfig(String name) {
+        if (name == null || name.trim().isEmpty()) {
             return "配置名为空，无法删除！";
         }
         configSavaRepository.deleteById(name);

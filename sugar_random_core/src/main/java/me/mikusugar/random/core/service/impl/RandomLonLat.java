@@ -7,7 +7,6 @@ import me.mikusugar.random.core.utils.RandomUtilInterface;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.Random;
 
 /**
  * @author mikusugar
