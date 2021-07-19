@@ -1,6 +1,6 @@
 package me.mikusugar.sugar.random.cli.service;
 
-import me.mikusugar.sugar.random.cli.utils.CliUtils;
+import me.mikusugar.random.core.bean.SugarJsonNode;
 import org.jline.utils.AttributedString;
 import org.springframework.context.PayloadApplicationEvent;
 import org.springframework.context.event.EventListener;
@@ -13,19 +13,19 @@ import org.springframework.stereotype.Component;
 @Component
 public class CustomPromptProvider implements PromptProvider {
 
-    private String path;
+    private SugarJsonNode curNode;
 
     @Override
     public AttributedString getPrompt() {
-        if(path!=null){
-            return new AttributedString("🍭 "+ CliUtils.getLastPath(path) +" :>");
+        if (curNode != null) {
+            return new AttributedString("🍭 " + curNode.getName() + " :>");
         }
         return new AttributedString("🍭 root :>");
     }
 
     @EventListener
-    public void handle(PayloadApplicationEvent<String> event) {
-        this.path = event.getPayload();
+    public void handle(PayloadApplicationEvent<SugarJsonNode> event) {
+        this.curNode = event.getPayload();
     }
 
 }

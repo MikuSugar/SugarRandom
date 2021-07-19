@@ -46,7 +46,7 @@ public class CliService {
 
     private Set<String> dtype;
 
-    private String path;
+    private SugarJsonNode curNode;
 
     public CliService() {
         this.rootNode =
@@ -62,7 +62,8 @@ public class CliService {
         for (SugarJsonNode.TYPE type : SugarJsonNode.TYPE.values()) {
             dtype.add(type.toString());
         }
-        path = "/root";
+        this.curNode = rootNode;
+        this.aliasMap = new HashMap<>();
     }
 
 
@@ -251,17 +252,31 @@ public class CliService {
     // unix 文件系统风格命令
     ///////////////////////////////////////////////////////////////////////////
 
+    private Map<String, String> aliasMap;
 
-    @ShellMethod(value = "当前节点路径",group = "unix-stayle")
+    @ShellMethod(value = "当前节点路径", group = "unix-stayle")
     public String pwd() {
-        return path;
+        return CliUtils.gePath(curNode);
     }
 
-    //TODO cd
+    @ShellMethod(value = "进入到某个节点", group = "unix-stayle")
+    public void cd(String path) throws Exception {
+        curNode = CliUtils.getPathNode(curNode, path, rootNode);
+        assert curNode != null;
+    }
 
-    //TODO ll
+    @ShellMethod(value = "展示结构", group = "unix-stayle")
+    public String ll(@ShellOption(defaultValue = "") String path) throws Exception {
+        final SugarJsonNode node = CliUtils.getPathNode(curNode, path, rootNode);
+        assert node != null;
+        return CliUtils.JsonNodeToTreeStr(node);
+    }
 
-    //TODO alias
+    @ShellMethod(value = "别名，仅针对随机类型名，会覆盖，优先级大于随机类型名")
+    public void alias(String rType, String aliasName) throws Exception {
+        if (map.containsKey(aliasName)) throw new Exception("别名不能与随机类型名相同");
+        aliasMap.put(aliasName,rType);
+    }
 
     //TODO mkarray
 
