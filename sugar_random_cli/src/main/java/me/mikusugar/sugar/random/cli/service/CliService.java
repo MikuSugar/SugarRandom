@@ -11,6 +11,7 @@ import me.mikusugar.random.core.utils.SugarJsonNodeSerialization;
 import me.mikusugar.random.core.utils.SugarJsonUtils;
 import me.mikusugar.sugar.random.cli.utils.CliUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
@@ -36,11 +37,16 @@ public class CliService {
     @Autowired
     private ConfigSavaRepository configSavaRepository;
 
+    @Autowired
+    ApplicationContext applicationContext;
+
     private SugarJsonNode rootNode;
 
     private Map<String, SugarJsonNode> map;
 
     private Set<String> dtype;
+
+    private String path;
 
     public CliService() {
         this.rootNode =
@@ -56,6 +62,7 @@ public class CliService {
         for (SugarJsonNode.TYPE type : SugarJsonNode.TYPE.values()) {
             dtype.add(type.toString());
         }
+        path = "/root";
     }
 
 
@@ -146,6 +153,7 @@ public class CliService {
                         .randomServiceName(rtype)
                         .randomService(randomService.createRandomCoreService(input))
                         .desc(randomService.helpText())
+                        .father(map.get(father))
                         .build();
         map.get(father).getNexts().add(node);
         map.put(node.getName(), node);
@@ -238,5 +246,30 @@ public class CliService {
         configSavaRepository.deleteById(name);
         return "删除成功";
     }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // unix 文件系统风格命令
+    ///////////////////////////////////////////////////////////////////////////
+
+
+    @ShellMethod(value = "当前节点路径",group = "unix-stayle")
+    public String pwd() {
+        return path;
+    }
+
+    //TODO cd
+
+    //TODO ll
+
+    //TODO alias
+
+    //TODO mkarray
+
+    //TODO mkobject
+
+    //TODO rm
+
+    //TODO touch
+
 
 }

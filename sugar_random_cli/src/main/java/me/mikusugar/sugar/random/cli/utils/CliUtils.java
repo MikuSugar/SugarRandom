@@ -76,4 +76,9 @@ public class CliUtils {
         }
         return null;
     }
+
+
+    public static String getLastPath(final String path) {
+        return path.substring(path.lastIndexOf("/") + 1);
+    }
 }

@@ -45,21 +45,18 @@ public class SugarJsonNodeSerialization {
     public static SugarJsonNode read(String str, Map<String, AbstractRandomService> randomServiceMap)
             throws JsonProcessingException {
         final RandomConfig randomConfig = mapper.readValue(str, RandomConfig.class);
-        return toSugarJsonNode(randomConfig, randomServiceMap);
+        return toSugarJsonNode(randomConfig, randomServiceMap, null);
     }
 
     private static SugarJsonNode toSugarJsonNode(
-            RandomConfig randomConfig, Map<String, AbstractRandomService> randomServiceMap) {
+            RandomConfig randomConfig, Map<String, AbstractRandomService> randomServiceMap, SugarJsonNode father) {
         List<SugarJsonNode> next = new ArrayList<>();
-        if (randomConfig.getNexts().size() > 0) {
-            next.addAll(
-                    randomConfig.getNexts().stream()
-                            .map(r -> toSugarJsonNode(r, randomServiceMap))
-                            .collect(Collectors.toList()));
-        }
+
+
         String input = "";
         if (randomConfig.getInput() != null) input = randomConfig.getInput();
-        return SugarJsonNode.builder()
+
+        final SugarJsonNode res = SugarJsonNode.builder()
                 .name(randomConfig.getName())
                 .desc(randomConfig.getDesc())
                 .randomServiceName(randomConfig.getRandomServiceName())
@@ -69,7 +66,17 @@ public class SugarJsonNodeSerialization {
                                 .get(randomConfig.getRandomServiceName())
                                 .createRandomCoreService(input))
                 .type(randomConfig.getType())
+                .father(father)
                 .build();
+
+        if (randomConfig.getNexts().size() > 0) {
+            next.addAll(
+                    randomConfig.getNexts().stream()
+                            .map(r -> toSugarJsonNode(r, randomServiceMap,res))
+                            .collect(Collectors.toList()));
+        }
+
+        return res;
     }
 }
 
