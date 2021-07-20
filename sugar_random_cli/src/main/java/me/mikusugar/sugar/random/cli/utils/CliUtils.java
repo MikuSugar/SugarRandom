@@ -2,9 +2,6 @@ package me.mikusugar.sugar.random.cli.utils;
 
 import me.mikusugar.random.core.bean.SugarJsonNode;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * @author mikusugar
@@ -33,10 +30,9 @@ public class CliUtils {
     private static void dfs(SugarJsonNode node, StringBuilder res, final int level) {
         if (node == null) return;
         if (level == 0) {
-            if(node.getName().equals("root")){
+            if (node.getName().equals("root")) {
                 res.append("🍭 root 根节点").append(System.lineSeparator());
-            }
-            else {
+            } else {
                 res.append("🍭 ")
                         .append(node.getName())
                         .append(" ")
@@ -111,7 +107,7 @@ public class CliUtils {
 
     /**
      * cd 获取到某个路径
-     *
+     * //TODO 可能有问题
      * @param curNode  当前节点
      * @param path     路径
      * @param rootNode 跟节点
@@ -122,7 +118,7 @@ public class CliUtils {
                                             SugarJsonNode rootNode) throws Exception {
         String[] nodes = path.split("/");
         int idx = 0;
-        if (nodes[0].trim().isEmpty()) {
+        if (nodes[0].trim().isEmpty() && nodes.length >= 2) {
             if (nodes[1].trim().equals("root")) {
                 idx = 2;
                 curNode = rootNode;
@@ -131,8 +127,13 @@ public class CliUtils {
 
         for (; idx < nodes.length; idx++) {
             final String str = nodes[idx].trim();
-            if (str.equals("") || str.equals(".")) continue;
-            if (str.equals("..")) curNode = curNode.getFather();
+            if (str.equals("") || str.equals(".")) {
+                continue;
+            }
+            if (str.equals("..")) {
+                curNode = curNode.getFather();
+                continue;
+            }
             SugarJsonNode next = null;
             for (SugarJsonNode n : curNode.getNexts()) {
                 if (n.getName().equals(str)) {
