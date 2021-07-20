@@ -164,6 +164,7 @@ public class SugarRandomView extends HorizontalLayout {
                             .get(randomType.getValue())
                             .createRandomCoreService(randomInfo.getValue()))
                     .desc(randomServiceMap.get(randomType.getValue()).helpText())
+                    .father(map.get(fieldFather.getValue()))
                     .build();
             map.get(fieldFather.getValue()).getNexts().add(node);
             map.put(node.getName(), node);
