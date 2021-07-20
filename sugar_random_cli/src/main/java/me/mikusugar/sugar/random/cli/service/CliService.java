@@ -279,7 +279,7 @@ public class CliService {
         return CliUtils.JsonNodeToTreeStr(node);
     }
 
-    @ShellMethod(value = "别名，仅针对随机类型名，会覆盖，优先级大于随机类型名")
+    @ShellMethod(value = "别名，仅针对随机类型名，会覆盖，优先级大于随机类型名",group = "unix-stayle")
     public void alias(String rType, String aliasName) throws Exception {
         if (map.containsKey(aliasName)) throw new Exception("别名不能与随机类型名相同");
         aliasMap.put(aliasName, rType);
