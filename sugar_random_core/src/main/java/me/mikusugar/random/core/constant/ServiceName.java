@@ -28,4 +28,9 @@ public class ServiceName {
 
   public static final String RANDOM_IP = "随机生成IP";
 
+  public static final String UUID = "UUID";
+
+  public static final String MAC = "MAC";
+
+  public static final String LONLAT = "经纬度";
 }

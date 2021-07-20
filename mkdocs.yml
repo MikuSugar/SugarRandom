@@ -19,6 +19,7 @@ nav:
       - 配置: usage_web/config.md
   - CLI使用:
       - 快速使用: usage_cli/quick_cli.md
+      - 新版命令: usage_cli/quick_cli_new.md
   - 开发:
       - 简介: develop/index.md
       - 新的随机类型: develop/newtype.md
