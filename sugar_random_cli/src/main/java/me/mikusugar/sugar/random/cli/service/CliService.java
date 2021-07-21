@@ -165,8 +165,8 @@ public class CliService {
     @ShellMethod(value = "删除字段，会同时删除该字段的所有子字段,无法删除root字段", group = "random")
     public String delNode(String field) {
         if (!map.containsKey(field)) return CliUtils.showField(field) + "不存在";
-        final SugarJsonNode father = CliUtils.findFather(rootNode, field);
         final SugarJsonNode node = map.get(field);
+        final SugarJsonNode father = node.getFather();
         dfsDelNode(node);
         father.getNexts().remove(node);
         return CliUtils.showField(field) + "已删除";
@@ -174,7 +174,7 @@ public class CliService {
 
     private void dfsDelNode(SugarJsonNode node) {
         if (node.getNexts() != null) {
-            node.getNexts().forEach(next -> dfsDelNode(next));
+            node.getNexts().forEach(this::dfsDelNode);
         }
         map.remove(node.getName());
     }
@@ -279,7 +279,7 @@ public class CliService {
         return CliUtils.JsonNodeToTreeStr(node);
     }
 
-    @ShellMethod(value = "别名，仅针对随机类型名，会覆盖，优先级大于随机类型名",group = "unix-stayle")
+    @ShellMethod(value = "别名，仅针对随机类型名，会覆盖，优先级大于随机类型名", group = "unix-stayle")
     public void alias(String rType, String aliasName) throws Exception {
         if (map.containsKey(aliasName)) throw new Exception("别名不能与随机类型名相同");
         aliasMap.put(aliasName, rType);
