@@ -76,8 +76,7 @@ public class CliService {
         StringBuilder res = new StringBuilder();
         randomServiceMap.forEach(
                 (k, v) ->
-                        res.append("随机类型:")
-                                .append(k)
+                        res.append(k)
                                 .append("\t 描述:")
                                 .append(v.helpText().replace(System.lineSeparator(), " "))
                                 .append(System.lineSeparator())
