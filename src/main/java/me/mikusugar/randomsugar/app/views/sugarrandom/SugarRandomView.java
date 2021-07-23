@@ -402,7 +402,7 @@ public class SugarRandomView extends HorizontalLayout {
 
     private HorizontalLayout createHorizontalLayout() {
         HorizontalLayout res = new HorizontalLayout();
-        res.setWidthFull();
+        res.setWidth("98%");
         return res;
     }
 
