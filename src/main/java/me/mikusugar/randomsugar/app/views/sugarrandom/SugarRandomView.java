@@ -30,6 +30,7 @@ import me.mikusugar.random.core.constant.ServiceName;
 import me.mikusugar.random.core.constant.ServiceNameValues;
 import me.mikusugar.random.core.service.AbstractRandomService;
 import me.mikusugar.random.core.service.ConfigSavaRepository;
+import me.mikusugar.random.core.utils.GenerateCodeUtil;
 import me.mikusugar.random.core.utils.SugarJsonNodeSerialization;
 import me.mikusugar.random.core.utils.SugarJsonUtils;
 import me.mikusugar.randomsugar.app.utils.NotionUtils;
@@ -77,6 +78,11 @@ public class SugarRandomView extends HorizontalLayout {
     private Dialog resPreDialog;
     private TextArea resPreTextArea;
     private Button resPreButton;
+
+    //生成代码
+    private Dialog generateCodeDialog;
+    private TextArea generateCodeArea;
+    private Button generateCodeButton;
 
     @Autowired
     private Map<String, AbstractRandomService> randomServiceMap;
@@ -220,6 +226,15 @@ public class SugarRandomView extends HorizontalLayout {
             resPreTextArea.setValue(prettyFormatJson);
         });
 
+        generateCodeButton.addClickListener(e->{
+            try {
+                generateCodeArea.setValue(GenerateCodeUtil.getCode(rootNode));
+            } catch (Exception exception) {
+                exception.printStackTrace();
+                NotionUtils.defaultNotion(exception.toString());
+            }
+        });
+
     }
 
 
@@ -292,7 +307,7 @@ public class SugarRandomView extends HorizontalLayout {
         number.setLabel("生成条数");
         start = new Button("开始");
         area = new TextArea("参数配置说明");
-        area.setWidthFull();
+        area.setWidth("60%");
         area.setReadOnly(true);
         StreamResource href = new StreamResource("download.json", this::getInputStream);
         href.setCacheTime(0);
@@ -301,17 +316,16 @@ public class SugarRandomView extends HorizontalLayout {
         download.add(start);
         resPreDialog = new Dialog();
         resPreTextArea = new TextArea("结果：");
-        resPreTextArea.setWidthFull();
-        resPreTextArea.setHeight("90%");
-        resPreDialog.add(resPreTextArea);
-        final Button closePreButton = new Button("关闭", e -> resPreDialog.close());
-        closePreButton.setWidthFull();
-        resPreDialog.add(closePreButton);
-        resPreDialog.setHeight("80%");
-        resPreDialog.setWidth("80%");
+        helpDialogAndTextArea(resPreTextArea, resPreDialog);
         resPreButton = new Button("预览", e -> resPreDialog.open());
-        startLayout.add(area, resPreButton, number, download);
-        startLayout.setVerticalComponentAlignment(Alignment.END, area, resPreButton, number, download);
+
+        generateCodeDialog = new Dialog();
+        generateCodeArea = new TextArea("Code");
+        helpDialogAndTextArea(generateCodeArea, generateCodeDialog);
+        generateCodeButton = new Button("生成Java代码", e -> generateCodeDialog.open());
+
+        startLayout.add(area, resPreButton, number, download, generateCodeButton);
+        startLayout.setVerticalComponentAlignment(Alignment.END, area, resPreButton, number, download, generateCodeButton);
         add(startLayout);
 
         addClassName("sugar-random-view");
@@ -327,9 +341,21 @@ public class SugarRandomView extends HorizontalLayout {
         flushTree();
     }
 
+
     ///////////////////////////////////////////////////////////////////////////
     // 工具方法
     ///////////////////////////////////////////////////////////////////////////
+
+    private void helpDialogAndTextArea(TextArea textArea, Dialog dialog) {
+        textArea.setWidthFull();
+        textArea.setHeight("90%");
+        dialog.add(textArea);
+        final Button closePreButton = new Button("关闭", e -> dialog.close());
+        closePreButton.setWidthFull();
+        dialog.add(closePreButton);
+        dialog.setHeight("80%");
+        dialog.setWidth("80%");
+    }
 
     private InputStream getInputStream() {
         val res = new StringBuilder();
@@ -376,7 +402,7 @@ public class SugarRandomView extends HorizontalLayout {
 
     private HorizontalLayout createHorizontalLayout() {
         HorizontalLayout res = new HorizontalLayout();
-        res.setWidthFull();
+        res.setWidth("98%");
         return res;
     }
 

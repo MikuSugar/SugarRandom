@@ -8,6 +8,7 @@ import me.mikusugar.random.core.constant.ServiceName;
 import me.mikusugar.random.core.service.AbstractRandomService;
 import me.mikusugar.random.core.service.ConfigSavaRepository;
 import me.mikusugar.random.core.service.RandomCoreService;
+import me.mikusugar.random.core.utils.GenerateCodeUtil;
 import me.mikusugar.random.core.utils.SugarJsonNodeSerialization;
 import me.mikusugar.random.core.utils.SugarJsonUtils;
 import me.mikusugar.sugar.random.cli.utils.CliUtils;
@@ -76,8 +77,7 @@ public class CliService {
         StringBuilder res = new StringBuilder();
         randomServiceMap.forEach(
                 (k, v) ->
-                        res.append("随机类型:")
-                                .append(k)
+                        res.append(k)
                                 .append("\t 描述:")
                                 .append(v.helpText().replace(System.lineSeparator(), " "))
                                 .append(System.lineSeparator())
@@ -202,6 +202,11 @@ public class CliService {
         out.flush();
         out.close();
         return "文件已经生成";
+    }
+
+    @ShellMethod(value = "生成Java代码",group = "random")
+    public String code() throws JsonProcessingException {
+        return GenerateCodeUtil.getCode(rootNode);
     }
 
     ///////////////////////////////////////////////////////////////////////////
