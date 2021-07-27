@@ -2,6 +2,7 @@ package me.mikusugar.random.core.bean;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
 import me.mikusugar.random.core.service.RandomCoreService;
 
@@ -13,6 +14,7 @@ import java.util.List;
  */
 @Data
 @SuperBuilder
+@EqualsAndHashCode(exclude="nexts")
 @SuppressWarnings("ALL")
 public class SugarJsonNode {
 

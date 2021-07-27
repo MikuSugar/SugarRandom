@@ -8,6 +8,7 @@ import me.mikusugar.random.core.constant.ServiceName;
 import me.mikusugar.random.core.service.AbstractRandomService;
 import me.mikusugar.random.core.service.ConfigSavaRepository;
 import me.mikusugar.random.core.service.RandomCoreService;
+import me.mikusugar.random.core.utils.GenerateCodeUtil;
 import me.mikusugar.random.core.utils.SugarJsonNodeSerialization;
 import me.mikusugar.random.core.utils.SugarJsonUtils;
 import me.mikusugar.sugar.random.cli.utils.CliUtils;
@@ -76,8 +77,7 @@ public class CliService {
         StringBuilder res = new StringBuilder();
         randomServiceMap.forEach(
                 (k, v) ->
-                        res.append("随机类型:")
-                                .append(k)
+                        res.append(k)
                                 .append("\t 描述:")
                                 .append(v.helpText().replace(System.lineSeparator(), " "))
                                 .append(System.lineSeparator())
@@ -165,8 +165,8 @@ public class CliService {
     @ShellMethod(value = "删除字段，会同时删除该字段的所有子字段,无法删除root字段", group = "random")
     public String delNode(String field) {
         if (!map.containsKey(field)) return CliUtils.showField(field) + "不存在";
-        final SugarJsonNode father = CliUtils.findFather(rootNode, field);
         final SugarJsonNode node = map.get(field);
+        final SugarJsonNode father = node.getFather();
         dfsDelNode(node);
         father.getNexts().remove(node);
         return CliUtils.showField(field) + "已删除";
@@ -174,7 +174,7 @@ public class CliService {
 
     private void dfsDelNode(SugarJsonNode node) {
         if (node.getNexts() != null) {
-            node.getNexts().forEach(next -> dfsDelNode(next));
+            node.getNexts().forEach(this::dfsDelNode);
         }
         map.remove(node.getName());
     }
@@ -202,6 +202,11 @@ public class CliService {
         out.flush();
         out.close();
         return "文件已经生成";
+    }
+
+    @ShellMethod(value = "生成Java代码",group = "random")
+    public String code() throws JsonProcessingException {
+        return GenerateCodeUtil.getCode(rootNode);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -279,7 +284,7 @@ public class CliService {
         return CliUtils.JsonNodeToTreeStr(node);
     }
 
-    @ShellMethod(value = "别名，仅针对随机类型名，会覆盖，优先级大于随机类型名",group = "unix-stayle")
+    @ShellMethod(value = "别名，仅针对随机类型名，会覆盖，优先级大于随机类型名", group = "unix-stayle")
     public void alias(String rType, String aliasName) throws Exception {
         if (map.containsKey(aliasName)) throw new Exception("别名不能与随机类型名相同");
         aliasMap.put(aliasName, rType);
