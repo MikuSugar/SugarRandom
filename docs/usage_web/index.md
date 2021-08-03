@@ -12,7 +12,7 @@
 
 你将看到如下页面
 
-![截屏2021-08-03下午9.06.05](https://cdn.jsdelivr.net/gh/mikusugar/PictureBed@master/uPic/2021/08/截屏2021-08-03 下午9.06.05.png)
+![web](https://cdn.jsdelivr.net/gh/mikusugar/PictureBed@master/uPic/2021/08/web.png)
 
 ## 使用
 
