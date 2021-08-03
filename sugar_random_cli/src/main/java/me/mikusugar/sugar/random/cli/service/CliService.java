@@ -44,9 +44,6 @@ public class CliService {
 
     private SugarJsonNode rootNode;
 
-    private Map<String, SugarJsonNode> map;
-
-    private Set<String> dtype;
 
     private SugarJsonNode curNode;
 
@@ -58,12 +55,6 @@ public class CliService {
                         .desc("默认根节点")
                         .randomServiceName(ServiceName.RANDOM_OBJ)
                         .build();
-        this.map = new HashMap<>();
-        this.map.put("root", rootNode);
-        dtype = new HashSet<>();
-        for (SugarJsonNode.TYPE type : SugarJsonNode.TYPE.values()) {
-            dtype.add(type.toString());
-        }
         this.curNode = rootNode;
         this.aliasMap = new HashMap<>();
     }
@@ -82,16 +73,6 @@ public class CliService {
                                 .append(v.helpText().replace(System.lineSeparator(), " "))
                                 .append(System.lineSeparator())
         );
-        return res.toString();
-    }
-
-    @ShellMethod(value = "展示所有数据类型", group = "show")
-    public String showDType() {
-        StringBuilder res = new StringBuilder();
-        final SugarJsonNode.TYPE[] values = SugarJsonNode.TYPE.values();
-        for (SugarJsonNode.TYPE type : values) {
-            res.append(type.toString()).append(System.lineSeparator());
-        }
         return res.toString();
     }
 
@@ -126,64 +107,12 @@ public class CliService {
     // group random
     ///////////////////////////////////////////////////////////////////////////
 
-    @ShellMethod(value = "添加字段", group = "random")
-    public String add(String field, String father, String dtype, String rtype,
-                      @ShellOption(defaultValue = "") String input) {
-        //check
-        if (map.containsKey(field)) {
-            return "[" + field + "]该字段已存在，不能重复添加！";
-        }
-        if (!randomServiceMap.containsKey(rtype)) {
-            return "[" + rtype + "]该随机类型不存在,请重新输入！";
-        }
-        if (!dtype.contains(dtype)) {
-            return "[" + dtype + "]该数据类型不存在,请重新输入！";
-        }
-        if (!map.containsKey(father)) {
-            return "[" + father + "]该节点不存在,请重新输入！";
-        }
-
-        final AbstractRandomService randomService = randomServiceMap.get(rtype);
-        if (!randomService.check(dtype, input)) {
-            return dtype + " " + input + " 数据检查未通过，请重新输入！";
-        }
-
-        SugarJsonNode node =
-                SugarJsonNode.builder()
-                        .name(field)
-                        .type(SugarJsonNode.TYPE.valueOf(dtype))
-                        .randomServiceName(rtype)
-                        .randomService(randomService.createRandomCoreService(input))
-                        .desc(randomService.helpText())
-                        .father(map.get(father))
-                        .build();
-        map.get(father).getNexts().add(node);
-        map.put(node.getName(), node);
-        return "字段配置添加成功～";
-    }
-
-    @ShellMethod(value = "删除字段，会同时删除该字段的所有子字段,无法删除root字段", group = "random")
-    public String delNode(String field) {
-        if (!map.containsKey(field)) return CliUtils.showField(field) + "不存在";
-        final SugarJsonNode node = map.get(field);
-        final SugarJsonNode father = node.getFather();
-        dfsDelNode(node);
-        father.getNexts().remove(node);
-        return CliUtils.showField(field) + "已删除";
-    }
-
-    private void dfsDelNode(SugarJsonNode node) {
-        if (node.getNexts() != null) {
-            node.getNexts().forEach(this::dfsDelNode);
-        }
-        map.remove(node.getName());
-    }
-
 
     @ShellMethod(value = "移除所有配置", group = "random")
     public String removeAll() {
-        this.map.clear();
-        this.map.put("root", rootNode);
+        this.rootNode.getNexts().forEach(node -> node.setFather(null));
+        this.rootNode.getNexts().clear();
+        this.curNode = this.rootNode;
         return "配置清楚成功。";
     }
 
@@ -204,7 +133,7 @@ public class CliService {
         return "文件已经生成";
     }
 
-    @ShellMethod(value = "生成Java代码",group = "random")
+    @ShellMethod(value = "生成Java代码", group = "random")
     public String code() throws JsonProcessingException {
         return GenerateCodeUtil.getCode(rootNode);
     }
@@ -220,18 +149,11 @@ public class CliService {
         if (savaRepositoryById.isPresent()) {
             this.rootNode = SugarJsonNodeSerialization.read(
                     savaRepositoryById.get().getJson(), randomServiceMap);
-            map.clear();
-            dfsAddMap(this.rootNode);
             this.curNode = this.rootNode;
             return "配置读取成功";
         } else return "配置名不存在！";
     }
 
-    private void dfsAddMap(SugarJsonNode node) {
-        if (node == null) return;
-        map.put(node.getName(), node);
-        node.getNexts().forEach(this::dfsAddMap);
-    }
 
     @ShellMethod(value = "配置存储", group = "config")
     public String save(String name) throws JsonProcessingException {
@@ -286,7 +208,7 @@ public class CliService {
 
     @ShellMethod(value = "别名，仅针对随机类型名，会覆盖，优先级大于随机类型名", group = "unix-stayle")
     public void alias(String rType, String aliasName) throws Exception {
-        if (map.containsKey(aliasName)) throw new Exception("别名不能与随机类型名相同");
+        if (randomServiceMap.containsKey(aliasName)) throw new Exception("别名不能与随机类型名相同");
         aliasMap.put(aliasName, rType);
     }
 
@@ -299,10 +221,12 @@ public class CliService {
             if (curNode.getNexts().size() > 0) throw new Exception("Array 只能有一个节点");
         }
 
-        if (map.containsKey(name)) throw new Exception("名称已经存在，请更换");
+        if (!CliUtils.checkNotDuplicateName(curNode, name)) {
+            throw new Exception("同级别名称不能重复");
+        }
 
         final AbstractRandomService arrayService = randomServiceMap.get(ServiceName.RANDOM_ARRAY_LEN);
-        if (!arrayService.check(SugarJsonNode.TYPE.ARRAY.toString(), input))
+        if (!arrayService.check(input))
             throw new Exception("参数检查不通过");
         final RandomCoreService randomCoreService = arrayService.createRandomCoreService(input);
 
@@ -316,15 +240,15 @@ public class CliService {
                 .type(SugarJsonNode.TYPE.ARRAY)
                 .build();
         curNode.getNexts().add(res);
-        map.put(name, res);
     }
+
 
     @ShellMethod(
             value = "添加一个object",
             group = "unix-stayle"
     )
     public void mkobj(String name) throws Exception {
-        if (map.containsKey(name)) throw new Exception("名称已经存在，请更换");
+        if (!CliUtils.checkNotDuplicateName(curNode, name)) throw new Exception("名称已经存在，请更换");
 
         if (SugarJsonNode.TYPE.ARRAY.equals(curNode.getType())) {
             if (curNode.getNexts().size() > 0) throw new Exception("Array 只能有一个节点");
@@ -343,18 +267,14 @@ public class CliService {
                 .build();
 
         curNode.getNexts().add(res);
-        map.put(name, res);
 
     }
 
     @ShellMethod(value = "添加字段", group = "unix-stayle")
-    public void touch(String field, String dtype, String rtype,
+    public void touch(String field, String rtype,
                       @ShellOption(defaultValue = "") String input) throws Exception {
-        if (map.containsKey(field)) {
+        if (!CliUtils.checkNotDuplicateName(curNode, field)) {
             throw new Exception("[" + field + "]该字段已存在，不能重复添加！");
-        }
-        if (!dtype.contains(dtype)) {
-            throw new Exception("[" + dtype + "]该数据类型不存在,请重新输入！");
         }
 
         AbstractRandomService randomService = null;
@@ -362,8 +282,8 @@ public class CliService {
         if (randomService == null) randomService = randomServiceMap.get(rtype);
         if (randomService == null) throw new Exception("[" + rtype + "]该随机类型不存在,请重新输入！");
 
-        if (!randomService.check(dtype, input)) {
-            throw new Exception(dtype + " " + input + " 数据检查未通过，请重新输入！");
+        if (!randomService.check(input)) {
+            throw new Exception(input + " 数据检查未通过，请重新输入！");
         }
         if (SugarJsonNode.TYPE.ARRAY.equals(curNode.getType())) {
             if (curNode.getNexts().size() > 0) throw new Exception("Array 只能有一个节点");
@@ -371,20 +291,23 @@ public class CliService {
         SugarJsonNode node =
                 SugarJsonNode.builder()
                         .name(field)
-                        .type(SugarJsonNode.TYPE.valueOf(dtype))
+                        .type(randomService.getType())
                         .randomServiceName(rtype)
                         .randomService(randomService.createRandomCoreService(input))
                         .desc(randomService.helpText())
                         .father(curNode)
                         .build();
         curNode.getNexts().add(node);
-        map.put(node.getName(), node);
     }
 
     @ShellMethod(value = "删除", group = "unix-stayle")
     public void rm(String path) throws Exception {
         final SugarJsonNode delNode = CliUtils.getPathNode(curNode, path, rootNode);
-        delNode(delNode.getName());
+        if (delNode.equals(rootNode)) removeAll();
+        else {
+            delNode.getFather().getNexts().remove(delNode);
+            delNode.setFather(null);
+        }
     }
 
 }

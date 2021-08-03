@@ -108,6 +108,7 @@ public class CliUtils {
     /**
      * cd 获取到某个路径
      * //TODO 可能有问题
+     *
      * @param curNode  当前节点
      * @param path     路径
      * @param rootNode 跟节点
@@ -147,4 +148,17 @@ public class CliUtils {
         return curNode;
     }
 
+
+    /**
+     * 检查是否在子节点中已出现该字段名
+     * @param curNode 父节点
+     * @param name 名字
+     */
+    public static boolean checkNotDuplicateName(SugarJsonNode curNode, String name) {
+        if (curNode.getNexts() == null || curNode.getNexts().isEmpty()) return true;
+        for (SugarJsonNode node : curNode.getNexts()) {
+            if (node.getName().equals(name)) return false;
+        }
+        return true;
+    }
 }
