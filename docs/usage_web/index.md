@@ -22,7 +22,7 @@
 
 + 设置`name`字段
 
-  ![name](/var/folders/8d/55sbwbgn5z3072zy_7z1hft00000gn/T/com.sindresorhus.Gifski/TemporaryItems/NSIRD_Gifski_CrpxOQ/name.gif)
+  ![name](https://cdn.jsdelivr.net/gh/mikusugar/PictureBed@master/uPic/2021/08/name.gif)
 
   如上图设置name字段后点下一个
 
