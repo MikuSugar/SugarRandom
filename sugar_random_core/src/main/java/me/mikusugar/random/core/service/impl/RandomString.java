@@ -33,8 +33,12 @@ public class RandomString extends AbstractRandomService<String> {
   }
 
   @Override
-  public boolean check(String type, String input) {
-    if (!SugarJsonNode.TYPE.STRING.toString().equals(type)) return false;
+  public SugarJsonNode.TYPE getType() {
+    return SugarJsonNode.TYPE.STRING;
+  }
+
+  @Override
+  public boolean check(String input) {
     try {
       val strs = input.split(",");
       for (String s : strs) {

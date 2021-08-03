@@ -20,8 +20,13 @@ public class RandomEmail extends AbstractRandomService<String> {
   }
 
   @Override
-  public boolean check(String type, String input) {
-    return SugarJsonNode.TYPE.STRING.toString().equals(type);
+  public SugarJsonNode.TYPE getType() {
+    return SugarJsonNode.TYPE.STRING;
+  }
+
+  @Override
+  public boolean check(String input) {
+    return true;
   }
 
   private static final String[] email_suffix =

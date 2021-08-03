@@ -13,18 +13,23 @@ import java.util.UUID;
  */
 @Service(ServiceName.UUID)
 public class RandomUUID extends AbstractRandomService<String> {
-  @Override
-  protected RandomUtilInterface<String> createRandomUtilInterface(String input) {
-    return () -> UUID.randomUUID().toString();
-  }
+    @Override
+    protected RandomUtilInterface<String> createRandomUtilInterface(String input) {
+        return () -> UUID.randomUUID().toString();
+    }
 
-  @Override
-  public String helpText() {
-    return "java 原生的UUID，无需输入";
-  }
+    @Override
+    public String helpText() {
+        return "java 原生的UUID，无需输入";
+    }
 
-  @Override
-  public boolean check(String type, String input) {
-    return SugarJsonNode.TYPE.STRING.toString().equals(type);
-  }
+    @Override
+    public boolean check(String input) {
+        return true;
+    }
+
+    @Override
+    public SugarJsonNode.TYPE getType() {
+        return SugarJsonNode.TYPE.STRING;
+    }
 }

@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 @Service(ServiceName.RANDOM_LONG)
 public class RandomLong extends AbstractRandomService<Long> {
 
+
+
   @Override
   protected RandomUtilInterface<Long> createRandomUtilInterface(String input) {
     val args = parse(input);
@@ -24,8 +26,12 @@ public class RandomLong extends AbstractRandomService<Long> {
   }
 
   @Override
-  public boolean check(String type, String input) {
-    if (!SugarJsonNode.TYPE.LONG.toString().equals(type)) return false;
+  public SugarJsonNode.TYPE getType() {
+    return SugarJsonNode.TYPE.LONG;
+  }
+
+  @Override
+  public boolean check(String input) {
     try {
       val in = parse(input);
       if (in.length != 3) return false;
