@@ -6,6 +6,7 @@ import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.grid.ItemClickEvent;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -60,8 +61,6 @@ public class SugarRandomView extends HorizontalLayout {
     private Button delConfig;
 
     private TextField fieldName;
-    private TextField fieldFather;
-    private Select<String> filedType;
     private Select<String> randomType;
     private TextArea randomInfo;
     private Button next;
@@ -70,8 +69,8 @@ public class SugarRandomView extends HorizontalLayout {
     private TreeGrid<SugarJsonNode> treeGrid;
     private NumberField number;
     private Button start;
-    private Map<String, SugarJsonNode> map;
     private SugarJsonNode rootNode;
+    private SugarJsonNode curNode;
     private TextArea area;
 
     // 结果预览
@@ -98,8 +97,7 @@ public class SugarRandomView extends HorizontalLayout {
                         .desc("默认根节点")
                         .randomServiceName(ServiceName.RANDOM_OBJ)
                         .build();
-        this.map = new HashMap<>();
-        this.map.put("root", rootNode);
+        this.curNode = rootNode;
         initView();
         even();
     }
@@ -174,20 +172,20 @@ public class SugarRandomView extends HorizontalLayout {
                             NotionUtils.defaultNotion("请检查参数是否合法！");
                             return;
                         }
+                        treeGrid.getSelectedItems();
                         val node =
                                 SugarJsonNode.builder()
-                                        .name(fieldName.getValue())
-                                        .type(SugarJsonNode.TYPE.valueOf(filedType.getValue()))
+                                        .name(fieldName.getValue().trim())
+                                        .type(randomServiceMap.get(randomType.getValue()).getType())
                                         .randomServiceName(randomType.getValue())
                                         .randomService(
                                                 randomServiceMap
                                                         .get(randomType.getValue())
                                                         .createRandomCoreService(randomInfo.getValue()))
                                         .desc(randomServiceMap.get(randomType.getValue()).helpText())
-                                        .father(map.get(fieldFather.getValue()))
+                                        .father(curNode)
                                         .build();
-                        map.get(fieldFather.getValue()).getNexts().add(node);
-                        map.put(node.getName(), node);
+                        curNode.getNexts().add(node);
                         flushTree();
                         NotionUtils.defaultNotion("字段配置添加成功～");
                     }
@@ -195,26 +193,34 @@ public class SugarRandomView extends HorizontalLayout {
                     private boolean checkNext() {
                         if (!randomServiceMap
                                 .get(randomType.getValue())
-                                .check(filedType.getValue(), randomInfo.getValue().trim())) return false;
-                        return !map.containsKey(fieldName.getValue())
-                                && map.containsKey(fieldFather.getValue());
+                                .check(randomInfo.getValue().trim())) return false;
+
+                        if (!(curNode.getType().equals(SugarJsonNode.TYPE.OBJECT) ||
+                                curNode.getType().equals(SugarJsonNode.TYPE.ARRAY))) {
+                            return false;
+                        }
+
+                        if (curNode.getType().equals(SugarJsonNode.TYPE.ARRAY)) {
+                            if (curNode.getNexts().size() > 0) return false;
+                        }
+
+                        for (SugarJsonNode node : curNode.getNexts()) {
+                            if (node.getName().equals(fieldName.getValue().trim())) return false;
+                        }
+                        return true;
                     }
                 });
 
         delNode.addClickListener(e -> {
-            val field = fieldName.getValue();
-            if (map.containsKey(field)) {
-                if (field.equals(rootNode.getName())) {
-                    NotionUtils.defaultNotion("根节点不能删除");
-                    return;
-                }
-                val node = map.get(field);
-                val father = node.getFather();
-                dfsDelNode(node);
-                father.getNexts().remove(node);
-                NotionUtils.defaultNotion("节点已经删除");
-                flushTree();
-            } else NotionUtils.defaultNotion("删除节点不存在");
+            if (curNode.equals(rootNode)) {
+                this.rootNode.getNexts().forEach(node -> node.setFather(null));
+                this.rootNode.getNexts().clear();
+                this.curNode = this.rootNode;
+            } else {
+                curNode.getFather().getNexts().remove(curNode);
+                curNode.setFather(null);
+            }
+            flushTree();
         });
 
         treeGrid.addItemClickListener(e -> area.setValue("参数说明：" + e.getItem().getDesc()));
@@ -226,7 +232,7 @@ public class SugarRandomView extends HorizontalLayout {
             resPreTextArea.setValue(prettyFormatJson);
         });
 
-        generateCodeButton.addClickListener(e->{
+        generateCodeButton.addClickListener(e -> {
             try {
                 generateCodeArea.setValue(GenerateCodeUtil.getCode(rootNode));
             } catch (Exception exception) {
@@ -234,6 +240,10 @@ public class SugarRandomView extends HorizontalLayout {
                 NotionUtils.defaultNotion(exception.toString());
             }
         });
+
+        treeGrid.addItemClickListener(
+                (ComponentEventListener<ItemClickEvent<SugarJsonNode>>) event -> curNode = event.getItem()
+        );
 
     }
 
@@ -260,20 +270,14 @@ public class SugarRandomView extends HorizontalLayout {
         HorizontalLayout fieldLayout = createHorizontalLayout();
         fieldName = new TextField();
         fieldName.setLabel("字段名");
-        fieldFather = new TextField();
-        fieldFather.setLabel("字段父亲");
-        fieldFather.setValue("root");
-        filedType = new Select<>();
-        filedType.setLabel("字段类型");
-        filedType.setItems(Arrays.stream(SugarJsonNode.TYPE.values()).map(String::valueOf));
         randomType = new Select<>();
         randomType.setLabel("随机类型");
         randomType.setItems(ServiceNameValues.getValues());
         next = new Button("下一个");
         delNode = new Button("删除");
-        fieldLayout.add(fieldName, fieldFather, filedType, randomType, next, delNode);
+        fieldLayout.add(fieldName, randomType, next, delNode);
         fieldLayout.setVerticalComponentAlignment(
-                Alignment.END, fieldName, fieldFather, filedType, randomType, next, delNode);
+                Alignment.END, fieldName, randomType, next, delNode);
         add(fieldLayout);
 
         HorizontalLayout randomLayout = createHorizontalLayout();
@@ -390,14 +394,7 @@ public class SugarRandomView extends HorizontalLayout {
                         })
                 .setHeader("参数配置");
         treeGrid.addColumn(SugarJsonNode::getDesc).setHeader("参数说明");
-        map.clear();
-        dfsAddMap(rootNode);
-    }
-
-    private void dfsAddMap(SugarJsonNode node) {
-        if (node == null) return;
-        map.put(node.getName(), node);
-        node.getNexts().forEach(this::dfsAddMap);
+        this.curNode = rootNode;
     }
 
     private HorizontalLayout createHorizontalLayout() {
@@ -406,10 +403,5 @@ public class SugarRandomView extends HorizontalLayout {
         return res;
     }
 
-    private void dfsDelNode(SugarJsonNode node) {
-        if (node.getNexts() != null) {
-            node.getNexts().forEach(this::dfsDelNode);
-        }
-        map.remove(node.getName());
-    }
+
 }

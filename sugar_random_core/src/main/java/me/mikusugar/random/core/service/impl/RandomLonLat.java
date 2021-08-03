@@ -29,6 +29,11 @@ public class RandomLonLat extends AbstractRandomService<String> {
         return "输入4位数字，如 112.1212, 134.1212, 43.12, 65.123 分别是 最小经度 最大经度 最小纬度 最大纬度 将返回这个结果内的值";
     }
 
+    @Override
+    public SugarJsonNode.TYPE getType() {
+        return SugarJsonNode.TYPE.STRING;
+    }
+
     /**
      * @param MinLon 最小经度
      * @param MaxLon 最大经度
@@ -46,8 +51,7 @@ public class RandomLonLat extends AbstractRandomService<String> {
 
 
     @Override
-    public boolean check(String type, String input) {
-        if (!SugarJsonNode.TYPE.STRING.toString().equals(type)) return false;
+    public boolean check(String input) {
         try {
             final String[] strs = input.trim().split(",");
             if (strs.length != 4) return false;

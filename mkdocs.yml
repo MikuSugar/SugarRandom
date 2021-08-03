@@ -19,9 +19,9 @@ nav:
       - 配置: usage_web/config.md
       - 生成代码: usage_web/generate_code.md
   - CLI使用:
-      - 快速使用: usage_cli/quick_cli.md
-      - 新版命令: usage_cli/quick_cli_new.md
+      - 快速使用: usage_cli/quick_cli_new.md
       - 生成代码: usage_cli/generate_code.md
   - 开发:
       - 简介: develop/index.md
       - 新的随机类型: develop/newtype.md
+      - 如何在自己的代码引用造数服务类: develop/import.md

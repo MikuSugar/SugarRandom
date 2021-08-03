@@ -81,10 +81,12 @@ public class RandomCNName extends AbstractRandomService<String> {
   }
 
   @Override
-  public boolean check(String type, String input) {
-    if (!SugarJsonNode.TYPE.STRING.toString().equals(type)) {
-      return false;
-    }
+  public SugarJsonNode.TYPE getType() {
+    return SugarJsonNode.TYPE.STRING;
+  }
+
+  @Override
+  public boolean check(String input) {
     if (input.trim().isEmpty()) return true;
     int num = Integer.parseInt(input);
     return num == 0 || num == 1;
