@@ -200,6 +200,10 @@ public class SugarRandomView extends HorizontalLayout {
                             return false;
                         }
 
+                        if (curNode.getType().equals(SugarJsonNode.TYPE.ARRAY)) {
+                            if (curNode.getNexts().size() > 0) return false;
+                        }
+
                         for (SugarJsonNode node : curNode.getNexts()) {
                             if (node.getName().equals(fieldName.getValue().trim())) return false;
                         }

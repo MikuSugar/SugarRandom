@@ -1,5 +1,7 @@
 # 快速使用
 
+> 部分截图可能与当前版本有细微差别，不影响教程。
+
 ## 开始之前
 
 如果你还没有安装，请前往[安装](../setup/index.md)
@@ -10,7 +12,7 @@
 
 你将看到如下页面
 
-![主界面](https://cdn.jsdelivr.net/gh/mikusugar/PictureBed@master/uPic/2021/06/2W0rwN.png)
+![截屏2021-08-03下午9.06.05](https://cdn.jsdelivr.net/gh/mikusugar/PictureBed@master/uPic/2021/08/截屏2021-08-03 下午9.06.05.png)
 
 ## 使用
 
@@ -20,37 +22,37 @@
 
 + 设置`name`字段
 
-  ![4eEeeD](https://cdn.jsdelivr.net/gh/mikusugar/PictureBed@master/uPic/2021/06/4eEeeD.png)
+  ![name](/var/folders/8d/55sbwbgn5z3072zy_7z1hft00000gn/T/com.sindresorhus.Gifski/TemporaryItems/NSIRD_Gifski_CrpxOQ/name.gif)
 
   如上图设置name字段后点下一个
 
 + 设置`citys`字段
 
-  ![8KY9cp](https://cdn.jsdelivr.net/gh/mikusugar/PictureBed@master/uPic/2021/06/8KY9cp.png)
+  ![cityss](https://cdn.jsdelivr.net/gh/mikusugar/PictureBed@master/uPic/2021/08/cityss.gif)
 
-  如上图，我们设置该字段为数组，在随机参数依据提示设置了数组长度为1到4
+  如上图，我们设置该字段为数组，在随机参数依据提示设置了数组长度为1到5
 
   点击下一个
 
 + 设置`citys`里的内容
 
-  ![YMu7JE](https://cdn.jsdelivr.net/gh/mikusugar/PictureBed@master/uPic/2021/06/YMu7JE.png)
+  ![city](https://cdn.jsdelivr.net/gh/mikusugar/PictureBed@master/uPic/2021/08/city.gif)
 
-  如上图，设置`citys`里的内容，这里的字段名只是一个标记，字段父亲一定要选择`citys`
+  如上图，设置`citys`里的内容，这里的字段名只是一个标记，字段父亲的选择通过在结构预览界面点击`citys`，**一定要在下一个按钮点击前通过结构预览界面选择父节点哦。**
 
   点击下一个
 
-+ 结果预览
++ 节点删除
 
-  ![结果预览](https://cdn.jsdelivr.net/gh/mikusugar/PictureBed@master/uPic/2021/06/结果预览.gif)
+  ![del](https://cdn.jsdelivr.net/gh/mikusugar/PictureBed@master/uPic/2021/08/del.gif)
 
-  如上图，点击**预览**即可预览当前配置生成效果。
+  如上图,在**结构预览**界面选择需要删除的节点，点击删除按钮即可。
 
 + 结构预览
 
   ![VGOsSC](https://cdn.jsdelivr.net/gh/mikusugar/PictureBed@master/uPic/2021/06/VGOsSC.png)
 
-  在结构预览里可以自由点击查看之前的配置。
+  在结构预览里可以自由点击查看之前的配置。通过点击选择当前节点，当前节点可作为新加节点的父亲或者点击删除时选中的节点。
 
 + 生成
 

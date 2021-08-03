@@ -113,7 +113,7 @@ public class CliService {
         this.rootNode.getNexts().forEach(node -> node.setFather(null));
         this.rootNode.getNexts().clear();
         this.curNode = this.rootNode;
-        return "配置清楚成功。";
+        return "配置清除成功。";
     }
 
     @ShellMethod(value = "生成文件到本地", group = "random")
