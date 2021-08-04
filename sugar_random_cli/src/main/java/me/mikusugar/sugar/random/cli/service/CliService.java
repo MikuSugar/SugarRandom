@@ -2,17 +2,12 @@ package me.mikusugar.sugar.random.cli.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.val;
-import me.mikusugar.random.core.bean.ConfigSave;
 import me.mikusugar.random.core.bean.SugarJsonNode;
 import me.mikusugar.random.core.constant.ServiceName;
-import me.mikusugar.random.core.service.AbstractRandomService;
-import me.mikusugar.random.core.service.ConfigSavaRepository;
-import me.mikusugar.random.core.service.RandomCoreService;
+import me.mikusugar.random.core.event.*;
 import me.mikusugar.random.core.utils.GenerateCodeUtil;
-import me.mikusugar.random.core.utils.SugarJsonNodeSerialization;
 import me.mikusugar.random.core.utils.SugarJsonUtils;
 import me.mikusugar.sugar.random.cli.utils.CliUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
@@ -26,28 +21,35 @@ import java.util.*;
 /**
  * @author mikusugar
  */
-@SuppressWarnings("ALL")
 @ShellComponent
 public class CliService {
 
     ///////////////////////////////////////////////////////////////////////////
     // init
     ///////////////////////////////////////////////////////////////////////////
-    @Autowired
-    private Map<String, AbstractRandomService> randomServiceMap;
-
-    @Autowired
-    private ConfigSavaRepository configSavaRepository;
-
-    @Autowired
-    ApplicationContext applicationContext;
+    private final ApplicationContext applicationContext;
+    private final PreEventService preEventService;
+    private final GetHelpEventService getHelpEventService;
+    private final DelEventService delEventService;
+    private final ConfigEventService configEventService;
+    private final NextEventService nextEventService;
+    private final ShowAllTypeEventService showAllTypeEventService;
+    private final AliasEventService aliasEventService;
 
     private SugarJsonNode rootNode;
 
 
     private SugarJsonNode curNode;
 
-    public CliService() {
+    public CliService(ApplicationContext applicationContext,
+                      PreEventService preEventService,
+                      GetHelpEventService getHelpEventService,
+                      DelEventService delEventService,
+                      ConfigEventService configEventService,
+                      NextEventService nextEventService,
+                      ShowAllTypeEventService showAllTypeEventService,
+                      AliasEventService aliasEventService) {
+
         this.rootNode =
                 SugarJsonNode.builder()
                         .name("root")
@@ -57,6 +59,14 @@ public class CliService {
                         .build();
         this.curNode = rootNode;
         this.aliasMap = new HashMap<>();
+        this.applicationContext = applicationContext;
+        this.preEventService = preEventService;
+        this.getHelpEventService = getHelpEventService;
+        this.delEventService = delEventService;
+        this.configEventService = configEventService;
+        this.nextEventService = nextEventService;
+        this.showAllTypeEventService = showAllTypeEventService;
+        this.aliasEventService = aliasEventService;
     }
 
 
@@ -65,24 +75,14 @@ public class CliService {
     ///////////////////////////////////////////////////////////////////////////
     @ShellMethod(value = "展示所有随机类型", group = "show")
     public String showAllR() {
-        StringBuilder res = new StringBuilder();
-        randomServiceMap.forEach(
-                (k, v) ->
-                        res.append(k)
-                                .append("\t 描述:")
-                                .append(v.helpText().replace(System.lineSeparator(), " "))
-                                .append(System.lineSeparator())
-        );
-        return res.toString();
+        return showAllTypeEventService.getAllTypeInfo();
     }
 
     @ShellMethod(value = "预览随机结果", group = "show")
     public String showJson(@ShellOption(defaultValue = "1") int num) {
         StringBuilder ans = new StringBuilder();
         while (num-- > 0) {
-            StringBuilder res = new StringBuilder();
-            SugarJsonUtils.toJsonStr(null, rootNode, res);
-            ans.append(SugarJsonUtils.json2PrettyFormat(res.toString()))
+            ans.append(preEventService.getPrettyJson(rootNode))
                     .append(System.lineSeparator());
         }
         return ans.toString();
@@ -95,11 +95,11 @@ public class CliService {
 
     @ShellMethod(value = "展示某个随机结构的提示", group = "show")
     public String showRType(String randomType) {
-        final AbstractRandomService randomService = randomServiceMap.get(randomType);
-        if (randomService == null) {
+        final String helpStr = getHelpEventService.getHelpStr(randomType.trim());
+        if (helpStr == null) {
             return "找不到类型【" + randomType + "】!" + " 所有类型:" + System.lineSeparator() + showAllR();
         } else {
-            return randomService.helpText();
+            return helpStr;
         }
     }
 
@@ -109,11 +109,8 @@ public class CliService {
 
 
     @ShellMethod(value = "移除所有配置", group = "random")
-    public String removeAll() {
-        this.rootNode.getNexts().forEach(node -> node.setFather(null));
-        this.rootNode.getNexts().clear();
-        this.curNode = this.rootNode;
-        return "配置清除成功。";
+    public void removeAll() {
+        delEventService.del(rootNode, rootNode);
     }
 
     @ShellMethod(value = "生成文件到本地", group = "random")
@@ -144,11 +141,9 @@ public class CliService {
 
     @ShellMethod(value = "配置读取", group = "config")
     public String read(String name) throws JsonProcessingException {
-        final Optional<ConfigSave> savaRepositoryById =
-                configSavaRepository.findById(name);
-        if (savaRepositoryById.isPresent()) {
-            this.rootNode = SugarJsonNodeSerialization.read(
-                    savaRepositoryById.get().getJson(), randomServiceMap);
+        final SugarJsonNode node = configEventService.getSugarJsonNode(name);
+        if (node != null) {
+            this.rootNode = node;
             this.curNode = this.rootNode;
             return "配置读取成功";
         } else return "配置名不存在！";
@@ -160,11 +155,7 @@ public class CliService {
         if (name == null || name.trim().isEmpty()) {
             return "配置名为空，无法存储！";
         }
-        final String json = SugarJsonNodeSerialization.write(rootNode);
-        ConfigSave configSave = new ConfigSave();
-        configSave.setId(name);
-        configSave.setJson(json);
-        configSavaRepository.save(configSave);
+        configEventService.saveConfig(name, rootNode);
         return "配置存储成功";
     }
 
@@ -173,7 +164,7 @@ public class CliService {
         if (name == null || name.trim().isEmpty()) {
             return "配置名为空，无法删除！";
         }
-        configSavaRepository.deleteById(name);
+        configEventService.delConfig(name);
         return "删除成功";
     }
 
@@ -208,7 +199,7 @@ public class CliService {
 
     @ShellMethod(value = "别名，仅针对随机类型名，会覆盖，优先级大于随机类型名", group = "unix-stayle")
     public void alias(String rType, String aliasName) throws Exception {
-        if (randomServiceMap.containsKey(aliasName)) throw new Exception("别名不能与随机类型名相同");
+        if (!aliasEventService.checkAliasEventService(aliasName)) throw new Exception("别名不能与随机类型名相同");
         aliasMap.put(aliasName, rType);
     }
 
@@ -216,30 +207,9 @@ public class CliService {
             value = "添加一个数组，input 参考 [show-rtype " + ServiceName.RANDOM_ARRAY_LEN + "]",
             group = "unix-stayle")
     public void mkarr(String name, String input) throws Exception {
-
-        if (SugarJsonNode.TYPE.ARRAY.equals(curNode.getType())) {
-            if (curNode.getNexts().size() > 0) throw new Exception("Array 只能有一个节点");
-        }
-
-        if (!CliUtils.checkNotDuplicateName(curNode, name)) {
-            throw new Exception("同级别名称不能重复");
-        }
-
-        final AbstractRandomService arrayService = randomServiceMap.get(ServiceName.RANDOM_ARRAY_LEN);
-        if (!arrayService.check(input))
-            throw new Exception("参数检查不通过");
-        final RandomCoreService randomCoreService = arrayService.createRandomCoreService(input);
-
-        final SugarJsonNode res = SugarJsonNode.builder()
-                .father(curNode)
-                .name(name)
-                .nexts(new ArrayList<>())
-                .randomService(randomCoreService)
-                .randomServiceName(ServiceName.RANDOM_ARRAY_LEN)
-                .desc(arrayService.helpText())
-                .type(SugarJsonNode.TYPE.ARRAY)
-                .build();
-        curNode.getNexts().add(res);
+        if (nextEventService.check(ServiceName.RANDOM_ARRAY_LEN, curNode, input, name)) {
+            nextEventService.add(name, ServiceName.RANDOM_ARRAY_LEN, input, curNode);
+        } else throw new Exception("配置不合法");
     }
 
 
@@ -248,66 +218,27 @@ public class CliService {
             group = "unix-stayle"
     )
     public void mkobj(String name) throws Exception {
-        if (!CliUtils.checkNotDuplicateName(curNode, name)) throw new Exception("名称已经存在，请更换");
-
-        if (SugarJsonNode.TYPE.ARRAY.equals(curNode.getType())) {
-            if (curNode.getNexts().size() > 0) throw new Exception("Array 只能有一个节点");
-        }
-
-        val objRandService = randomServiceMap.get(ServiceName.RANDOM_OBJ);
-        val coreService = objRandService.createRandomCoreService("");
-
-        SugarJsonNode res = SugarJsonNode.builder()
-                .father(curNode)
-                .name(name)
-                .nexts(new ArrayList<>())
-                .randomServiceName(ServiceName.RANDOM_OBJ)
-                .desc(objRandService.helpText())
-                .type(SugarJsonNode.TYPE.OBJECT)
-                .build();
-
-        curNode.getNexts().add(res);
+        if (nextEventService.check(ServiceName.RANDOM_OBJ, curNode, "", name)) {
+            nextEventService.add(name, ServiceName.RANDOM_OBJ, "", curNode);
+        } else throw new Exception("配置不合法");
 
     }
 
     @ShellMethod(value = "添加字段", group = "unix-stayle")
     public void touch(String field, String rtype,
                       @ShellOption(defaultValue = "") String input) throws Exception {
-        if (!CliUtils.checkNotDuplicateName(curNode, field)) {
-            throw new Exception("[" + field + "]该字段已存在，不能重复添加！");
-        }
 
-        AbstractRandomService randomService = null;
-        if (aliasMap.containsKey(rtype)) randomService = randomServiceMap.get(aliasMap.get(rtype));
-        if (randomService == null) randomService = randomServiceMap.get(rtype);
-        if (randomService == null) throw new Exception("[" + rtype + "]该随机类型不存在,请重新输入！");
+        if (aliasMap.containsKey(rtype)) rtype = aliasMap.get(rtype);
 
-        if (!randomService.check(input)) {
-            throw new Exception(input + " 数据检查未通过，请重新输入！");
-        }
-        if (SugarJsonNode.TYPE.ARRAY.equals(curNode.getType())) {
-            if (curNode.getNexts().size() > 0) throw new Exception("Array 只能有一个节点");
-        }
-        SugarJsonNode node =
-                SugarJsonNode.builder()
-                        .name(field)
-                        .type(randomService.getType())
-                        .randomServiceName(rtype)
-                        .randomService(randomService.createRandomCoreService(input))
-                        .desc(randomService.helpText())
-                        .father(curNode)
-                        .build();
-        curNode.getNexts().add(node);
+        if (nextEventService.check(rtype, curNode, input, field)) {
+            nextEventService.add(field, rtype, input, curNode);
+        } else throw new Exception("配置不合法");
     }
 
     @ShellMethod(value = "删除", group = "unix-stayle")
     public void rm(String path) throws Exception {
         final SugarJsonNode delNode = CliUtils.getPathNode(curNode, path, rootNode);
-        if (delNode.equals(rootNode)) removeAll();
-        else {
-            delNode.getFather().getNexts().remove(delNode);
-            delNode.setFather(null);
-        }
+        delEventService.del(delNode, rootNode);
     }
 
 }
