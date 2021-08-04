@@ -394,7 +394,28 @@ public class SugarRandomView extends HorizontalLayout {
                         })
                 .setHeader("参数配置");
         treeGrid.addColumn(SugarJsonNode::getDesc).setHeader("参数说明");
+        treeGrid.expand(getList(rootNode));
         this.curNode = rootNode;
+    }
+
+    /**
+     * 扁平化展开
+     *
+     * @param rootNode 根节点
+     * @return List
+     */
+    private List<SugarJsonNode> getList(SugarJsonNode rootNode) {
+        final Queue<SugarJsonNode> queue = new ArrayDeque<>();
+        final List<SugarJsonNode> res = new ArrayList<>();
+        queue.add(rootNode);
+        while (!queue.isEmpty()) {
+            final SugarJsonNode p = queue.poll();
+            res.add(p);
+            if (p.getNexts() != null) {
+                queue.addAll(p.getNexts());
+            }
+        }
+        return res;
     }
 
     private HorizontalLayout createHorizontalLayout() {
