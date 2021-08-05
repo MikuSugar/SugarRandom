@@ -10,10 +10,10 @@ public interface NextEventService {
     /***
      * 检查参数是否正确
      */
-    boolean check(String randomType, SugarJsonNode curNode, String randomInfo, String fieldName);
+    void check(String randomType, SugarJsonNode curNode, String randomInfo, String fieldName) throws Exception;
 
     /**
      *  添加节点配置
      */
-    void add(String name, String randomType, String randomInfo, SugarJsonNode curNode);
+    void add(String name, String randomType, String randomInfo, SugarJsonNode curNode) throws Exception;
 }

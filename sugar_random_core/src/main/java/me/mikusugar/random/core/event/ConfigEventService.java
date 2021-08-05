@@ -1,6 +1,5 @@
 package me.mikusugar.random.core.event;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import me.mikusugar.random.core.bean.SugarJsonNode;
 
 /**
@@ -13,7 +12,7 @@ public interface ConfigEventService {
      *
      * @param configName 配置名
      */
-    SugarJsonNode getSugarJsonNode(String configName);
+    SugarJsonNode getSugarJsonNode(String configName) throws Exception;
 
     /**
      * 存储配置
@@ -21,11 +20,11 @@ public interface ConfigEventService {
      * @param configName 配置名
      * @param rootNode 待存储的根节点
      */
-    void saveConfig(String configName, SugarJsonNode rootNode) throws JsonProcessingException;
+    void saveConfig(String configName, SugarJsonNode rootNode) throws Exception;
 
     /**
      *  通过配置名删除配置
      * @param configName 配置名
      */
-    void delConfig(String configName);
+    void delConfig(String configName) throws Exception;
 }

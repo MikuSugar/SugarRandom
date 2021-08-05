@@ -1,6 +1,5 @@
 package me.mikusugar.randomsugar.app.views.sugarrandom;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
@@ -33,7 +32,6 @@ import me.mikusugar.random.core.utils.SugarJsonUtils;
 import me.mikusugar.randomsugar.app.utils.NotionUtils;
 import me.mikusugar.randomsugar.app.views.main.MainView;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -116,34 +114,37 @@ public class SugarRandomView extends HorizontalLayout {
 
         readConfig.addClickListener(
                 buttonClickEvent -> {
-                    if (StringUtils.isEmpty(configName.getValue())) NotionUtils.defaultNotion("配置名为空！！！无法读取");
-                    else {
+                    try {
                         val node = configEventService.getSugarJsonNode(configName.getValue());
-                        if (node != null) {
-                            rootNode = node;
-                            flushTree();
-                            NotionUtils.defaultNotion("配置[" + configName.getValue() + "]读取成功");
-                        } else NotionUtils.defaultNotion("没有找到配置");
+                        assert node != null;
+                        this.rootNode = node;
+                        flushTree();
+                        NotionUtils.defaultNotion(configName.getValue() + "读取成功~");
+                    } catch (Exception e) {
+                        log.error(e.toString());
+                        NotionUtils.defaultNotion(e.getMessage());
                     }
                 });
 
         saveConfig.addClickListener(
                 buttonClickEvent -> {
-                    if (StringUtils.isEmpty(configName.getValue())) NotionUtils.defaultNotion("配置名为空！！！无法存储");
-                    else {
-                        try {
-                            configEventService.saveConfig(configName.getValue(), rootNode);
-                            NotionUtils.defaultNotion("配置[" + configName.getValue() + "]存储成功");
-                        } catch (JsonProcessingException e) {
-                            log.error(e.toString());
-                        }
+                    try {
+                        configEventService.saveConfig(configName.getValue(), rootNode);
+                        NotionUtils.defaultNotion("配置[" + configName.getValue() + "]存储成功");
+                    } catch (Exception e) {
+                        log.error(e.toString());
+                        NotionUtils.defaultNotion(e.getMessage());
                     }
                 });
 
         delConfig.addClickListener(
                 buttonClickEvent -> {
-                    if (StringUtils.isEmpty(configName.getValue())) NotionUtils.defaultNotion("配置名为空！！！无法删除");
-                    else configEventService.delConfig(configName.getValue());
+                    try {
+                        configEventService.delConfig(configName.getValue());
+                    } catch (Exception e) {
+                        log.error(e.toString());
+                        NotionUtils.defaultNotion(e.getMessage());
+                    }
                 });
 
         randomType.addBlurListener(
@@ -151,17 +152,22 @@ public class SugarRandomView extends HorizontalLayout {
 
         next.addClickListener(
                 (ComponentEventListener<ClickEvent<Button>>) buttonClickEvent -> {
-                    if (!nextEventService.check(
-                            randomType.getValue(),
-                            curNode,
-                            randomInfo.getValue(),
-                            fieldName.getValue())) {
-                        NotionUtils.defaultNotion("请检查参数是否合法！");
-                        return;
+                    try {
+                        nextEventService.check(
+                                randomType.getValue(),
+                                curNode,
+                                randomInfo.getValue(),
+                                fieldName.getValue());
+                        nextEventService.add(
+                                fieldName.getValue(),
+                                randomType.getValue(),
+                                randomInfo.getValue(),
+                                curNode);
+                        NotionUtils.defaultNotion("字段配置添加成功～");
+                        flushTree();
+                    } catch (Exception e) {
+                        NotionUtils.defaultNotion(e.getMessage());
                     }
-                    nextEventService.add(fieldName.getValue(), randomType.getValue(), randomInfo.getValue(), curNode);
-                    NotionUtils.defaultNotion("字段配置添加成功～");
-                    flushTree();
                 });
 
         delNode.addClickListener(e -> {

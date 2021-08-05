@@ -6,16 +6,12 @@ import me.mikusugar.random.core.bean.SugarJsonNode;
 import me.mikusugar.random.core.constant.ServiceName;
 import me.mikusugar.random.core.event.*;
 import me.mikusugar.random.core.utils.GenerateCodeUtil;
-import me.mikusugar.random.core.utils.SugarJsonUtils;
 import me.mikusugar.sugar.random.cli.utils.CliUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.*;
 
 /**
@@ -35,6 +31,7 @@ public class CliService {
     private final NextEventService nextEventService;
     private final ShowAllTypeEventService showAllTypeEventService;
     private final AliasEventService aliasEventService;
+    private final FileEventService fileEventService;
 
     private SugarJsonNode rootNode;
 
@@ -48,7 +45,8 @@ public class CliService {
                       ConfigEventService configEventService,
                       NextEventService nextEventService,
                       ShowAllTypeEventService showAllTypeEventService,
-                      AliasEventService aliasEventService) {
+                      AliasEventService aliasEventService,
+                      FileEventService fileEventService) {
 
         this.rootNode =
                 SugarJsonNode.builder()
@@ -67,6 +65,7 @@ public class CliService {
         this.nextEventService = nextEventService;
         this.showAllTypeEventService = showAllTypeEventService;
         this.aliasEventService = aliasEventService;
+        this.fileEventService = fileEventService;
     }
 
 
@@ -114,20 +113,8 @@ public class CliService {
     }
 
     @ShellMethod(value = "生成文件到本地", group = "random")
-    public String outFile(int num, String path) throws IOException {
-        final FileWriter out = new FileWriter(new File(path + ".json"));
-        int size = num;
-        while (size-- > 0) {
-            val res = new StringBuilder();
-            SugarJsonUtils.toJsonStr(null, rootNode, res);
-            out.write(res.toString());
-            if (size > 0) {
-                out.write("," + System.lineSeparator());
-            }
-        }
-        out.flush();
-        out.close();
-        return "文件已经生成";
+    public void outFile(int num, String path) throws Exception {
+        fileEventService.out(rootNode, num, path);
     }
 
     @ShellMethod(value = "生成Java代码", group = "random")
@@ -140,32 +127,22 @@ public class CliService {
     ///////////////////////////////////////////////////////////////////////////
 
     @ShellMethod(value = "配置读取", group = "config")
-    public String read(String name) {
-        final SugarJsonNode node = configEventService.getSugarJsonNode(name);
-        if (node != null) {
-            this.rootNode = node;
-            this.curNode = this.rootNode;
-            return "配置读取成功";
-        } else return "配置名不存在！";
+    public void read(String name) throws Exception {
+        val node = configEventService.getSugarJsonNode(name);
+        assert node != null;
+        this.rootNode = node;
+        this.curNode = this.rootNode;
     }
 
 
     @ShellMethod(value = "配置存储", group = "config")
-    public String save(String name) throws JsonProcessingException {
-        if (name == null || name.trim().isEmpty()) {
-            return "配置名为空，无法存储！";
-        }
+    public void save(String name) throws Exception {
         configEventService.saveConfig(name, rootNode);
-        return "配置存储成功";
     }
 
     @ShellMethod(value = "配置删除", group = "config")
-    public String delConfig(String name) {
-        if (name == null || name.trim().isEmpty()) {
-            return "配置名为空，无法删除！";
-        }
+    public void delConfig(String name) throws Exception {
         configEventService.delConfig(name);
-        return "删除成功";
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -174,7 +151,7 @@ public class CliService {
 
     private final Map<String, String> aliasMap;
 
-    @ShellMethod(value = "当前节点路径", group = "style")
+    @ShellMethod(value = "当前节点路径", group = "unix-style")
     public String pwd() {
         return CliUtils.gePath(curNode);
     }
@@ -192,7 +169,7 @@ public class CliService {
 
     @ShellMethod(value = "展示结构", group = "unix-style")
     public String ll(@ShellOption(defaultValue = "") String path) throws Exception {
-        final SugarJsonNode node = CliUtils.getPathNode(curNode, path, rootNode);
+        val node = CliUtils.getPathNode(curNode, path, rootNode);
         assert node != null;
         return CliUtils.JsonNodeToTreeStr(node);
     }
@@ -207,9 +184,8 @@ public class CliService {
             value = "添加一个数组，input 参考 [show-rtype " + ServiceName.RANDOM_ARRAY_LEN + "]",
             group = "unix-style")
     public void mkarr(String name, String input) throws Exception {
-        if (nextEventService.check(ServiceName.RANDOM_ARRAY_LEN, curNode, input, name)) {
-            nextEventService.add(name, ServiceName.RANDOM_ARRAY_LEN, input, curNode);
-        } else throw new Exception("配置不合法");
+        nextEventService.check(ServiceName.RANDOM_ARRAY_LEN, curNode, input, name);
+        nextEventService.add(name, ServiceName.RANDOM_ARRAY_LEN, input, curNode);
     }
 
 
@@ -218,10 +194,8 @@ public class CliService {
             group = "unix-style"
     )
     public void mkobj(String name) throws Exception {
-        if (nextEventService.check(ServiceName.RANDOM_OBJ, curNode, "", name)) {
-            nextEventService.add(name, ServiceName.RANDOM_OBJ, "", curNode);
-        } else throw new Exception("配置不合法");
-
+        nextEventService.check(ServiceName.RANDOM_OBJ, curNode, "", name);
+        nextEventService.add(name, ServiceName.RANDOM_OBJ, "", curNode);
     }
 
     @ShellMethod(value = "添加字段", group = "unix-style")
@@ -230,14 +204,13 @@ public class CliService {
 
         if (aliasMap.containsKey(rtype)) rtype = aliasMap.get(rtype);
 
-        if (nextEventService.check(rtype, curNode, input, field)) {
-            nextEventService.add(field, rtype, input, curNode);
-        } else throw new Exception("配置不合法");
+        nextEventService.check(rtype, curNode, input, field);
+        nextEventService.add(field, rtype, input, curNode);
     }
 
     @ShellMethod(value = "删除", group = "unix-style")
     public void rm(String path) throws Exception {
-        final SugarJsonNode delNode = CliUtils.getPathNode(curNode, path, rootNode);
+        val delNode = CliUtils.getPathNode(curNode, path, rootNode);
         delEventService.del(delNode, rootNode);
     }
 

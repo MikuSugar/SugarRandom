@@ -25,28 +25,27 @@ public class NextEventServiceImpl implements NextEventService {
 
 
     @Override
-    public boolean check(String randomType, SugarJsonNode curNode, String randomInfo, String fieldName) {
+    public void check(String randomType, SugarJsonNode curNode, String randomInfo, String fieldName) throws Exception{
         if (!randomServiceMap
                 .get(randomType.trim())
-                .check(randomInfo.trim())) return false;
+                .check(randomInfo.trim())) throw new Exception("输入有误!");
 
         if (!(curNode.getType().equals(SugarJsonNode.TYPE.OBJECT) ||
                 curNode.getType().equals(SugarJsonNode.TYPE.ARRAY))) {
-            return false;
+            throw new Exception("只有 object 和 array 才有子节点");
         }
 
         if (curNode.getType().equals(SugarJsonNode.TYPE.ARRAY)) {
-            if (curNode.getNexts().size() > 0) return false;
+            if (curNode.getNexts().size() > 0) throw new Exception("array 子节点只有一个");
         }
 
         for (SugarJsonNode node : curNode.getNexts()) {
-            if (node.getName().equals(fieldName.trim())) return false;
+            if (node.getName().equals(fieldName.trim())) throw new Exception("同一层级字段名不能相同");
         }
-        return true;
     }
 
     @Override
-    public void add(String name, String randomType, String randomInfo, SugarJsonNode curNode) {
+    public void add(String name, String randomType, String randomInfo, SugarJsonNode curNode) throws Exception{
         val node =
                 SugarJsonNode.builder()
                         .name(name.trim())

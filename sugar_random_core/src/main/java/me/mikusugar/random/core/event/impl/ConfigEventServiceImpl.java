@@ -1,6 +1,5 @@
 package me.mikusugar.random.core.event.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import me.mikusugar.random.core.bean.ConfigSave;
 import me.mikusugar.random.core.bean.SugarJsonNode;
@@ -31,22 +30,16 @@ public class ConfigEventServiceImpl implements ConfigEventService {
     }
 
     @Override
-    public SugarJsonNode getSugarJsonNode(String configName) {
+    public SugarJsonNode getSugarJsonNode(String configName) throws Exception{
         final Optional<ConfigSave> savaRepositoryById =
                 configSavaRepository.findById(configName);
-        if (savaRepositoryById.isPresent()) {
-            try {
-                return SugarJsonNodeSerialization.read(
-                        savaRepositoryById.get().getJson(), randomServiceMap);
-            } catch (JsonProcessingException e) {
-                log.error(savaRepositoryById.get().getJson() + e);
-            }
-        }
-        return null;
+        if (savaRepositoryById.isPresent()) return SugarJsonNodeSerialization.read(
+                savaRepositoryById.get().getJson(), randomServiceMap);
+        else throw new Exception("not found config: "+configName);
     }
 
     @Override
-    public void saveConfig(String configName, SugarJsonNode rootNode) throws JsonProcessingException {
+    public void saveConfig(String configName, SugarJsonNode rootNode) throws Exception {
         final String json = SugarJsonNodeSerialization.write(rootNode);
         ConfigSave configSave = new ConfigSave();
         configSave.setId(configName);
@@ -55,7 +48,7 @@ public class ConfigEventServiceImpl implements ConfigEventService {
     }
 
     @Override
-    public void delConfig(String configName) {
+    public void delConfig(String configName) throws Exception{
         configSavaRepository.deleteById(configName);
     }
 
