@@ -140,7 +140,7 @@ public class CliService {
     ///////////////////////////////////////////////////////////////////////////
 
     @ShellMethod(value = "配置读取", group = "config")
-    public String read(String name) throws JsonProcessingException {
+    public String read(String name) {
         final SugarJsonNode node = configEventService.getSugarJsonNode(name);
         if (node != null) {
             this.rootNode = node;
@@ -172,9 +172,9 @@ public class CliService {
     // unix 文件系统风格命令
     ///////////////////////////////////////////////////////////////////////////
 
-    private Map<String, String> aliasMap;
+    private final Map<String, String> aliasMap;
 
-    @ShellMethod(value = "当前节点路径", group = "unix-stayle")
+    @ShellMethod(value = "当前节点路径", group = "style")
     public String pwd() {
         return CliUtils.gePath(curNode);
     }
@@ -190,14 +190,14 @@ public class CliService {
         applicationContext.publishEvent(curNode);
     }
 
-    @ShellMethod(value = "展示结构", group = "unix-stayle")
+    @ShellMethod(value = "展示结构", group = "unix-style")
     public String ll(@ShellOption(defaultValue = "") String path) throws Exception {
         final SugarJsonNode node = CliUtils.getPathNode(curNode, path, rootNode);
         assert node != null;
         return CliUtils.JsonNodeToTreeStr(node);
     }
 
-    @ShellMethod(value = "别名，仅针对随机类型名，会覆盖，优先级大于随机类型名", group = "unix-stayle")
+    @ShellMethod(value = "别名，仅针对随机类型名，会覆盖，优先级大于随机类型名", group = "unix-style")
     public void alias(String rType, String aliasName) throws Exception {
         if (!aliasEventService.checkAliasEventService(aliasName)) throw new Exception("别名不能与随机类型名相同");
         aliasMap.put(aliasName, rType);
@@ -205,7 +205,7 @@ public class CliService {
 
     @ShellMethod(
             value = "添加一个数组，input 参考 [show-rtype " + ServiceName.RANDOM_ARRAY_LEN + "]",
-            group = "unix-stayle")
+            group = "unix-style")
     public void mkarr(String name, String input) throws Exception {
         if (nextEventService.check(ServiceName.RANDOM_ARRAY_LEN, curNode, input, name)) {
             nextEventService.add(name, ServiceName.RANDOM_ARRAY_LEN, input, curNode);
@@ -215,7 +215,7 @@ public class CliService {
 
     @ShellMethod(
             value = "添加一个object",
-            group = "unix-stayle"
+            group = "unix-style"
     )
     public void mkobj(String name) throws Exception {
         if (nextEventService.check(ServiceName.RANDOM_OBJ, curNode, "", name)) {
@@ -224,7 +224,7 @@ public class CliService {
 
     }
 
-    @ShellMethod(value = "添加字段", group = "unix-stayle")
+    @ShellMethod(value = "添加字段", group = "unix-style")
     public void touch(String field, String rtype,
                       @ShellOption(defaultValue = "") String input) throws Exception {
 
@@ -235,7 +235,7 @@ public class CliService {
         } else throw new Exception("配置不合法");
     }
 
-    @ShellMethod(value = "删除", group = "unix-stayle")
+    @ShellMethod(value = "删除", group = "unix-style")
     public void rm(String path) throws Exception {
         final SugarJsonNode delNode = CliUtils.getPathNode(curNode, path, rootNode);
         delEventService.del(delNode, rootNode);

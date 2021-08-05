@@ -67,33 +67,6 @@ public class CliUtils {
         }
     }
 
-    public static String showField(String field) {
-        return "【" + field + "】";
-    }
-
-
-    /**
-     * 找到字段的父亲
-     *
-     * @param rootNode 根节点
-     * @param field    字段
-     * @return 父亲字段
-     */
-    public static SugarJsonNode findFather(SugarJsonNode rootNode, String field) {
-        if (rootNode == null) return null;
-        if (rootNode.getNexts() != null) {
-            for (SugarJsonNode next : rootNode.getNexts()) {
-                if (next.getName().equals(field)) return rootNode;
-            }
-            for (SugarJsonNode next : rootNode.getNexts()) {
-                final SugarJsonNode res = findFather(next, field);
-                if (res != null) return res;
-            }
-        }
-        return null;
-    }
-
-
     /**
      * 通过jsonNode，获取完整路径
      *
@@ -146,19 +119,5 @@ public class CliUtils {
             else curNode = next;
         }
         return curNode;
-    }
-
-
-    /**
-     * 检查是否在子节点中已出现该字段名
-     * @param curNode 父节点
-     * @param name 名字
-     */
-    public static boolean checkNotDuplicateName(SugarJsonNode curNode, String name) {
-        if (curNode.getNexts() == null || curNode.getNexts().isEmpty()) return true;
-        for (SugarJsonNode node : curNode.getNexts()) {
-            if (node.getName().equals(name)) return false;
-        }
-        return true;
     }
 }
