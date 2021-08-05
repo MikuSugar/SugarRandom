@@ -38,7 +38,6 @@ public class GenerateCodeUtil {
                 "\n" +
                 "        int num = 1000000;\n" +
                 "        //生成多个\n" +
-                "        final long s = System.nanoTime();\n" +
                 "        final List<String> res = sugarRandom.getParallelStream(num).collect(Collectors.toList());\n" +
                 "    }\n" +
                 "\n" +

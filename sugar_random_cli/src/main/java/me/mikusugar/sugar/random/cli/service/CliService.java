@@ -29,7 +29,7 @@ public class CliService {
     private final DelEventService delEventService;
     private final ConfigEventService configEventService;
     private final NextEventService nextEventService;
-    private final ShowAllTypeEventService showAllTypeEventService;
+    private final ShowEventService showEventService;
     private final AliasEventService aliasEventService;
     private final FileEventService fileEventService;
 
@@ -44,7 +44,7 @@ public class CliService {
                       DelEventService delEventService,
                       ConfigEventService configEventService,
                       NextEventService nextEventService,
-                      ShowAllTypeEventService showAllTypeEventService,
+                      ShowEventService showEventService,
                       AliasEventService aliasEventService,
                       FileEventService fileEventService) {
 
@@ -63,7 +63,7 @@ public class CliService {
         this.delEventService = delEventService;
         this.configEventService = configEventService;
         this.nextEventService = nextEventService;
-        this.showAllTypeEventService = showAllTypeEventService;
+        this.showEventService = showEventService;
         this.aliasEventService = aliasEventService;
         this.fileEventService = fileEventService;
     }
@@ -74,7 +74,7 @@ public class CliService {
     ///////////////////////////////////////////////////////////////////////////
     @ShellMethod(value = "展示所有随机类型", group = "show")
     public String showAllR() {
-        return showAllTypeEventService.getAllTypeInfo();
+        return showEventService.getAllTypeInfo();
     }
 
     @ShellMethod(value = "预览随机结果", group = "show")
@@ -145,6 +145,23 @@ public class CliService {
         configEventService.delConfig(name);
     }
 
+    @ShellMethod(value = "配置读取", group = "config")
+    public void readAlias(String name) throws Exception {
+        configEventService.readAlias(name, aliasMap);
+    }
+
+
+    @ShellMethod(value = "配置存储", group = "config")
+    public void saveAlias(String name) throws Exception {
+        configEventService.saveAlias(name, aliasMap);
+    }
+
+    @ShellMethod(value = "配置删除", group = "config")
+    public void delAliasConf(String name) throws Exception {
+        configEventService.delAlias(name);
+    }
+
+
     ///////////////////////////////////////////////////////////////////////////
     // unix 文件系统风格命令
     ///////////////////////////////////////////////////////////////////////////
@@ -212,6 +229,23 @@ public class CliService {
     public void rm(String path) throws Exception {
         val delNode = CliUtils.getPathNode(curNode, path, rootNode);
         delEventService.del(delNode, rootNode);
+    }
+
+    @ShellMethod(value = "预览", group = "unix-style")
+    public String cat(@ShellOption(defaultValue = "") String path) throws Exception {
+        val catNode = CliUtils.getPathNode(curNode, path, rootNode);
+        assert catNode != null;
+        return preEventService.getPrettyJson(catNode);
+    }
+
+    @ShellMethod(value = "配置读取", group = "unix-style")
+    public void source(String name) throws Exception {
+        configEventService.readAlias(name, aliasMap);
+    }
+
+    @ShellMethod(value = "展示别名")
+    public String echo(@ShellOption(defaultValue = "") String name) throws Exception {
+        return showEventService.echo(name, aliasMap);
     }
 
 }
