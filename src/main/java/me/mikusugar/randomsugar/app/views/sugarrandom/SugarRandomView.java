@@ -81,15 +81,7 @@ public class SugarRandomView extends HorizontalLayout {
 
     //事件服务
     @Autowired
-    private ConfigEventService configEventService;
-    @Autowired
-    private NextEventService nextEventService;
-    @Autowired
-    private DelEventService delEventService;
-    @Autowired
-    private PreEventService preEventService;
-    @Autowired
-    private GetHelpEventService getHelpEventService;
+    private GodService godService;
 
     public SugarRandomView() {
         this.rootNode =
@@ -115,7 +107,7 @@ public class SugarRandomView extends HorizontalLayout {
         readConfig.addClickListener(
                 buttonClickEvent -> {
                     try {
-                        val node = configEventService.getSugarJsonNode(configName.getValue());
+                        val node = godService.getSugarJsonNode(configName.getValue());
                         assert node != null;
                         this.rootNode = node;
                         flushTree();
@@ -129,7 +121,7 @@ public class SugarRandomView extends HorizontalLayout {
         saveConfig.addClickListener(
                 buttonClickEvent -> {
                     try {
-                        configEventService.saveConfig(configName.getValue(), rootNode);
+                        godService.saveConfig(configName.getValue(), rootNode);
                         NotionUtils.defaultNotion("配置[" + configName.getValue() + "]存储成功");
                     } catch (Exception e) {
                         log.error(e.toString());
@@ -140,7 +132,7 @@ public class SugarRandomView extends HorizontalLayout {
         delConfig.addClickListener(
                 buttonClickEvent -> {
                     try {
-                        configEventService.delConfig(configName.getValue());
+                        godService.delConfig(configName.getValue());
                     } catch (Exception e) {
                         log.error(e.toString());
                         NotionUtils.defaultNotion(e.getMessage());
@@ -148,17 +140,17 @@ public class SugarRandomView extends HorizontalLayout {
                 });
 
         randomType.addBlurListener(
-                event -> randomInfo.setHelperText(getHelpEventService.getHelpStr(randomType.getValue())));
+                event -> randomInfo.setHelperText(godService.getHelpStr(randomType.getValue())));
 
         next.addClickListener(
                 (ComponentEventListener<ClickEvent<Button>>) buttonClickEvent -> {
                     try {
-                        nextEventService.check(
+                        godService.check(
                                 randomType.getValue(),
                                 curNode,
                                 randomInfo.getValue(),
                                 fieldName.getValue());
-                        nextEventService.add(
+                        godService.add(
                                 fieldName.getValue(),
                                 randomType.getValue(),
                                 randomInfo.getValue(),
@@ -171,14 +163,14 @@ public class SugarRandomView extends HorizontalLayout {
                 });
 
         delNode.addClickListener(e -> {
-            delEventService.del(curNode, rootNode);
+            godService.del(curNode, rootNode);
             this.curNode = this.rootNode;
             flushTree();
         });
 
         treeGrid.addItemClickListener(e -> area.setValue("参数说明：" + e.getItem().getDesc()));
 
-        resPreButton.addClickListener(e -> resPreTextArea.setValue(preEventService.getPrettyJson(rootNode)));
+        resPreButton.addClickListener(e -> resPreTextArea.setValue(godService.getPrettyJson(rootNode)));
 
         generateCodeButton.addClickListener(e -> {
             try {

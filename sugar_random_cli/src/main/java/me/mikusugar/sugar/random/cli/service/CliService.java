@@ -23,30 +23,14 @@ public class CliService {
     ///////////////////////////////////////////////////////////////////////////
     // init
     ///////////////////////////////////////////////////////////////////////////
+
     private final ApplicationContext applicationContext;
-    private final PreEventService preEventService;
-    private final GetHelpEventService getHelpEventService;
-    private final DelEventService delEventService;
-    private final ConfigEventService configEventService;
-    private final NextEventService nextEventService;
-    private final ShowEventService showEventService;
-    private final AliasEventService aliasEventService;
-    private final FileEventService fileEventService;
+    private final GodService godService;
 
     private SugarJsonNode rootNode;
-
-
     private SugarJsonNode curNode;
 
-    public CliService(ApplicationContext applicationContext,
-                      PreEventService preEventService,
-                      GetHelpEventService getHelpEventService,
-                      DelEventService delEventService,
-                      ConfigEventService configEventService,
-                      NextEventService nextEventService,
-                      ShowEventService showEventService,
-                      AliasEventService aliasEventService,
-                      FileEventService fileEventService) {
+    public CliService(ApplicationContext applicationContext, GodService godService) {
 
         this.rootNode =
                 SugarJsonNode.builder()
@@ -56,16 +40,11 @@ public class CliService {
                         .randomServiceName(ServiceName.RANDOM_OBJ)
                         .build();
         this.curNode = rootNode;
+
         this.aliasMap = new HashMap<>();
+
         this.applicationContext = applicationContext;
-        this.preEventService = preEventService;
-        this.getHelpEventService = getHelpEventService;
-        this.delEventService = delEventService;
-        this.configEventService = configEventService;
-        this.nextEventService = nextEventService;
-        this.showEventService = showEventService;
-        this.aliasEventService = aliasEventService;
-        this.fileEventService = fileEventService;
+        this.godService = godService;
     }
 
 
@@ -74,14 +53,14 @@ public class CliService {
     ///////////////////////////////////////////////////////////////////////////
     @ShellMethod(value = "展示所有随机类型", group = "show")
     public String showAllR() {
-        return showEventService.getAllTypeInfo();
+        return godService.getAllTypeInfo();
     }
 
     @ShellMethod(value = "预览随机结果", group = "show")
     public String showJson(@ShellOption(defaultValue = "1") int num) {
         StringBuilder ans = new StringBuilder();
         while (num-- > 0) {
-            ans.append(preEventService.getPrettyJson(rootNode))
+            ans.append(godService.getPrettyJson(rootNode))
                     .append(System.lineSeparator());
         }
         return ans.toString();
@@ -94,7 +73,7 @@ public class CliService {
 
     @ShellMethod(value = "展示某个随机结构的提示", group = "show")
     public String showRType(String randomType) {
-        final String helpStr = getHelpEventService.getHelpStr(randomType.trim());
+        final String helpStr = godService.getHelpStr(randomType.trim());
         if (helpStr == null) {
             return "找不到类型【" + randomType + "】!" + " 所有类型:" + System.lineSeparator() + showAllR();
         } else {
@@ -109,12 +88,12 @@ public class CliService {
 
     @ShellMethod(value = "移除所有配置", group = "random")
     public void removeAll() {
-        delEventService.del(rootNode, rootNode);
+        godService.del(rootNode, rootNode);
     }
 
     @ShellMethod(value = "生成文件到本地", group = "random")
     public void outFile(int num, String path) throws Exception {
-        fileEventService.out(rootNode, num, path);
+        godService.out(rootNode, num, path);
     }
 
     @ShellMethod(value = "生成Java代码", group = "random")
@@ -128,7 +107,7 @@ public class CliService {
 
     @ShellMethod(value = "配置读取", group = "config")
     public void read(String name) throws Exception {
-        val node = configEventService.getSugarJsonNode(name);
+        val node = godService.getSugarJsonNode(name);
         assert node != null;
         this.rootNode = node;
         this.curNode = this.rootNode;
@@ -137,28 +116,28 @@ public class CliService {
 
     @ShellMethod(value = "配置存储", group = "config")
     public void save(String name) throws Exception {
-        configEventService.saveConfig(name, rootNode);
+        godService.saveConfig(name, rootNode);
     }
 
     @ShellMethod(value = "配置删除", group = "config")
     public void delConfig(String name) throws Exception {
-        configEventService.delConfig(name);
+        godService.delConfig(name);
     }
 
     @ShellMethod(value = "配置读取", group = "config")
     public void readAlias(String name) throws Exception {
-        configEventService.readAlias(name, aliasMap);
+        godService.readAlias(name, aliasMap);
     }
 
 
     @ShellMethod(value = "配置存储", group = "config")
     public void saveAlias(String name) throws Exception {
-        configEventService.saveAlias(name, aliasMap);
+        godService.saveAlias(name, aliasMap);
     }
 
     @ShellMethod(value = "配置删除", group = "config")
     public void delAliasConf(String name) throws Exception {
-        configEventService.delAlias(name);
+        godService.delAlias(name);
     }
 
 
@@ -193,7 +172,7 @@ public class CliService {
 
     @ShellMethod(value = "别名，仅针对随机类型名，会覆盖，优先级大于随机类型名", group = "unix-style")
     public void alias(String rType, String aliasName) throws Exception {
-        if (!aliasEventService.checkAliasEventService(aliasName)) throw new Exception("别名不能与随机类型名相同");
+        if (!godService.checkAliasEventService(aliasName)) throw new Exception("别名不能与随机类型名相同");
         aliasMap.put(aliasName, rType);
     }
 
@@ -201,8 +180,8 @@ public class CliService {
             value = "添加一个数组，input 参考 [show-rtype " + ServiceName.RANDOM_ARRAY_LEN + "]",
             group = "unix-style")
     public void mkarr(String name, String input) throws Exception {
-        nextEventService.check(ServiceName.RANDOM_ARRAY_LEN, curNode, input, name);
-        nextEventService.add(name, ServiceName.RANDOM_ARRAY_LEN, input, curNode);
+        godService.check(ServiceName.RANDOM_ARRAY_LEN, curNode, input, name);
+        godService.add(name, ServiceName.RANDOM_ARRAY_LEN, input, curNode);
     }
 
 
@@ -211,8 +190,8 @@ public class CliService {
             group = "unix-style"
     )
     public void mkobj(String name) throws Exception {
-        nextEventService.check(ServiceName.RANDOM_OBJ, curNode, "", name);
-        nextEventService.add(name, ServiceName.RANDOM_OBJ, "", curNode);
+        godService.check(ServiceName.RANDOM_OBJ, curNode, "", name);
+        godService.add(name, ServiceName.RANDOM_OBJ, "", curNode);
     }
 
     @ShellMethod(value = "添加字段", group = "unix-style")
@@ -221,31 +200,31 @@ public class CliService {
 
         if (aliasMap.containsKey(rtype)) rtype = aliasMap.get(rtype);
 
-        nextEventService.check(rtype, curNode, input, field);
-        nextEventService.add(field, rtype, input, curNode);
+        godService.check(rtype, curNode, input, field);
+        godService.add(field, rtype, input, curNode);
     }
 
     @ShellMethod(value = "删除", group = "unix-style")
     public void rm(String path) throws Exception {
         val delNode = CliUtils.getPathNode(curNode, path, rootNode);
-        delEventService.del(delNode, rootNode);
+        godService.del(delNode, rootNode);
     }
 
     @ShellMethod(value = "预览", group = "unix-style")
     public String cat(@ShellOption(defaultValue = "") String path) throws Exception {
         val catNode = CliUtils.getPathNode(curNode, path, rootNode);
         assert catNode != null;
-        return preEventService.getPrettyJson(catNode);
+        return godService.getPrettyJson(catNode);
     }
 
     @ShellMethod(value = "配置读取", group = "unix-style")
     public void source(String name) throws Exception {
-        configEventService.readAlias(name, aliasMap);
+        godService.readAlias(name, aliasMap);
     }
 
     @ShellMethod(value = "展示别名")
     public String echo(@ShellOption(defaultValue = "") String name) throws Exception {
-        return showEventService.echo(name, aliasMap);
+        return godService.echo(name, aliasMap);
     }
 
 }

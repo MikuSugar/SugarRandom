@@ -14,7 +14,7 @@
 </dependency>
 ```
 
-> 版本后请选择最新版
+> 版本号请选择最新版
 
 ⚠️目前依赖在GitHub package，并没有在中央仓库。[github 仓库使用参考](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry)
 
