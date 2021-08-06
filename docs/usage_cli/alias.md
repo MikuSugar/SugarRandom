@@ -37,7 +37,7 @@
 
 **source** [**--name**] string
 
-参数是名字，功能与save-alias一样,这个命令更符合使用习惯。
+参数是名字，功能与read-alias一样,这个命令更符合使用习惯。
 
 ## echo
 
