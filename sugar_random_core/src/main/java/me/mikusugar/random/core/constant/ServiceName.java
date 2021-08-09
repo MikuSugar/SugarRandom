@@ -33,4 +33,7 @@ public class ServiceName {
   public static final String MAC = "MAC";
 
   public static final String LONLAT = "经纬度";
+
+  public static final String IPV6 = "ipv6";
+
 }
