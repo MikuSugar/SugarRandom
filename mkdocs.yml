@@ -10,6 +10,9 @@ theme:
 repo_url: https://github.com/MikuSugar/SugarRandom
 repo_name: MikuSugar/SugarRandom
 site_description:  SugarRandom官方网站
+markdown_extensions:
+  - pymdownx.highlight
+  - pymdownx.superfences
 nav:
   - 主页: index.md
   - 安装:
@@ -27,3 +30,4 @@ nav:
       - 简介: develop/index.md
       - 新的随机类型: develop/newtype.md
       - 如何在自己的代码引用造数服务类: develop/import.md
+
