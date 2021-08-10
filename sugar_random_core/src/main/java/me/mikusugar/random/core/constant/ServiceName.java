@@ -36,4 +36,6 @@ public class ServiceName {
 
   public static final String IPV6 = "ipv6";
 
+  public static final String USER_AGENT = "uagent";
+
 }
