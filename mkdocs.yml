@@ -15,7 +15,7 @@ markdown_extensions:
   - pymdownx.superfences
 nav:
   - 主页: index.md
-    - 更新日志: log.md
+  - 更新日志: log.md
   - 安装:
       - 简介: setup/index.md
   - WEB使用:
