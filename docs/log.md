@@ -1,6 +1,6 @@
 # 更新日志
 
-### 2021/08/11
+### 2021/08/11 [v1.2-beta2](https://github.com/MikuSugar/SugarRandom/releases/tag/v1.2-beta.2)
 
 + 添加表达式支持
 

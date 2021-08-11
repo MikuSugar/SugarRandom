@@ -94,14 +94,14 @@ public  abstract class  AbstractRandomService<T> {
      * 获取数据类型
      * @return SugarJsonNode.TYPE
      */
-    public abstract SugarJsonNode.TYPE getType();
+    public abstract SugarJsonNode.TYPE getType(String input);
 
     /**
      * 检查合法
      * @param input 输入检查
-     * @return
      */
     public abstract boolean check(String input);
+
 
 }
 
@@ -147,7 +147,7 @@ public class RandomIntList extends AbstractRandomService<Integer> {
     }
 
     @Override
-    public SugarJsonNode.TYPE getType() {
+    public SugarJsonNode.TYPE getType(String input) {
         return SugarJsonNode.TYPE.INT;
     }
 
