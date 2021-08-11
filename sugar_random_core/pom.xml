@@ -56,6 +56,12 @@
             <artifactId>reflections</artifactId>
             <version>0.9.12</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.googlecode.aviator</groupId>
+            <artifactId>aviator</artifactId>
+            <version>5.2.6</version>
+        </dependency>
     </dependencies>
 
     <distributionManagement>

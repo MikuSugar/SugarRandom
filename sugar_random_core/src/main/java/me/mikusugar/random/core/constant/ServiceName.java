@@ -38,4 +38,6 @@ public class ServiceName {
 
   public static final String USER_AGENT = "uagent";
 
+  public static final String EXPR = "expr";
+
 }

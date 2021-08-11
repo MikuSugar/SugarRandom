@@ -25,7 +25,7 @@ public class NextEventServiceImpl implements NextEventService {
 
 
     @Override
-    public void check(String randomType, SugarJsonNode curNode, String randomInfo, String fieldName) throws Exception{
+    public void check(String randomType, SugarJsonNode curNode, String randomInfo, String fieldName) throws Exception {
         if (!randomServiceMap
                 .get(randomType.trim())
                 .check(randomInfo.trim())) throw new Exception("输入有误!");
@@ -45,11 +45,11 @@ public class NextEventServiceImpl implements NextEventService {
     }
 
     @Override
-    public void add(String name, String randomType, String randomInfo, SugarJsonNode curNode) throws Exception{
+    public void add(String name, String randomType, String randomInfo, SugarJsonNode curNode) throws Exception {
         val node =
                 SugarJsonNode.builder()
                         .name(name.trim())
-                        .type(randomServiceMap.get(randomType).getType())
+                        .type(randomServiceMap.get(randomType).getType(randomInfo))
                         .randomServiceName(randomType)
                         .randomService(
                                 randomServiceMap

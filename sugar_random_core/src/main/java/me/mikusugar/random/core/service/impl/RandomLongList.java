@@ -32,7 +32,7 @@ public class RandomLongList extends AbstractRandomService<Long> {
     }
 
     @Override
-    public SugarJsonNode.TYPE getType() {
+    public SugarJsonNode.TYPE getType(String input) {
         return SugarJsonNode.TYPE.LONG;
     }
 

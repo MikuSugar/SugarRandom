@@ -45,7 +45,7 @@ public class RandomIpv6 extends AbstractRandomService<String> {
     }
 
     @Override
-    public SugarJsonNode.TYPE getType() {
+    public SugarJsonNode.TYPE getType(String input) {
         return SugarJsonNode.TYPE.STRING;
     }
 

@@ -29,7 +29,7 @@ public class RandomUUID extends AbstractRandomService<String> {
     }
 
     @Override
-    public SugarJsonNode.TYPE getType() {
+    public SugarJsonNode.TYPE getType(String input) {
         return SugarJsonNode.TYPE.STRING;
     }
 }

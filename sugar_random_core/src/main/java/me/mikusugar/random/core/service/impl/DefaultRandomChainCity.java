@@ -72,12 +72,12 @@ public class DefaultRandomChainCity extends AbstractRandomService<String> {
         return "随机生成国内城市，无需输入～ (北上广等概率大)";
     }
 
-  @Override
-  public SugarJsonNode.TYPE getType() {
-    return SugarJsonNode.TYPE.STRING;
-  }
+    @Override
+    public SugarJsonNode.TYPE getType(String input) {
+        return SugarJsonNode.TYPE.STRING;
+    }
 
-  @Override
+    @Override
     public boolean check(String input) {
         return true;
     }

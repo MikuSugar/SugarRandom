@@ -22,7 +22,7 @@ public class RandomObject extends AbstractRandomService<Object> {
     }
 
     @Override
-    public SugarJsonNode.TYPE getType() {
+    public SugarJsonNode.TYPE getType(String input) {
         return SugarJsonNode.TYPE.OBJECT;
     }
 

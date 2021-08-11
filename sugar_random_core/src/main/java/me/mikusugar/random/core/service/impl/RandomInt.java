@@ -25,7 +25,7 @@ public class RandomInt extends AbstractRandomService<Integer> {
     }
 
     @Override
-    public SugarJsonNode.TYPE getType() {
+    public SugarJsonNode.TYPE getType(String input) {
         return SugarJsonNode.TYPE.INT;
     }
 
