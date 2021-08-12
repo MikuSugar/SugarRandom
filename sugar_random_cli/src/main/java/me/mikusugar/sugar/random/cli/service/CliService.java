@@ -1,11 +1,13 @@
 package me.mikusugar.sugar.random.cli.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import me.mikusugar.random.core.bean.SugarJsonNode;
 import me.mikusugar.random.core.constant.ServiceName;
 import me.mikusugar.random.core.event.*;
 import me.mikusugar.random.core.utils.GenerateCodeUtil;
+import me.mikusugar.random.core.utils.GetAllService;
 import me.mikusugar.sugar.random.cli.utils.CliUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.shell.standard.ShellComponent;
@@ -18,6 +20,7 @@ import java.util.*;
  * @author mikusugar
  */
 @ShellComponent
+@Slf4j
 public class CliService {
 
     ///////////////////////////////////////////////////////////////////////////
@@ -41,10 +44,31 @@ public class CliService {
                         .build();
         this.curNode = rootNode;
 
-        this.aliasMap = new HashMap<>();
+        this.aliasMap = initAlias();
 
         this.applicationContext = applicationContext;
         this.godService = godService;
+    }
+
+    /**
+     * 加载默认别名
+     */
+    private Map<String, String> initAlias() {
+        final Map<String, String> res = new HashMap<>();
+        try {
+            GetAllService.getAllService().forEach(
+                    (k, v) -> {
+                        if (v.getAliasName() != null) {
+                            res.put(v.getAliasName(), k);
+                        }
+                    }
+            );
+        } catch (InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
+            log.warn("默认别名加载失败");
+        }
+        return res;
+
     }
 
 
@@ -222,7 +246,7 @@ public class CliService {
         godService.readAlias(name, aliasMap);
     }
 
-    @ShellMethod(value = "展示别名")
+    @ShellMethod(value = "展示别名",group = "unix-style")
     public String echo(@ShellOption(defaultValue = "") String name) throws Exception {
         return godService.echo(name, aliasMap);
     }

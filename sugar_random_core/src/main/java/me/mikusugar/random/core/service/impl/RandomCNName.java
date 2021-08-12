@@ -91,4 +91,9 @@ public class RandomCNName extends AbstractRandomService<String> {
     int num = Integer.parseInt(input);
     return num == 0 || num == 1;
   }
+
+  @Override
+  public String getAliasName() {
+    return "cnname";
+  }
 }

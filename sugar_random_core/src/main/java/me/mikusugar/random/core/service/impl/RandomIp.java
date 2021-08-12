@@ -62,4 +62,8 @@ public class RandomIp extends AbstractRandomService<String> {
         return num2ip(RANGE_IP[index][0] + random.nextInt(RANGE_IP[index][1] - RANGE_IP[index][0]));
     }
 
+    @Override
+    public String getAliasName() {
+        return "ipv4";
+    }
 }

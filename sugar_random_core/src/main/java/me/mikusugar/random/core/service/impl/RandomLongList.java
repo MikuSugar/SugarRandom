@@ -57,4 +57,9 @@ public class RandomLongList extends AbstractRandomService<Long> {
         }
         return true;
     }
+
+    @Override
+    public String getAliasName() {
+        return "listlong";
+    }
 }

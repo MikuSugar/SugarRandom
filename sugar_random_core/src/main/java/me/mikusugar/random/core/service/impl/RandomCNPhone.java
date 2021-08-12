@@ -42,4 +42,9 @@ public class RandomCNPhone extends AbstractRandomService<String> {
         String third = String.valueOf(getNum(1, 9100) + 10000).substring(1);
         return first + second + third;
     }
+
+    @Override
+    public String getAliasName() {
+        return "cnphone";
+    }
 }

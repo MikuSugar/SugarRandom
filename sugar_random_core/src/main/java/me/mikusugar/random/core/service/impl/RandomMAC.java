@@ -46,4 +46,9 @@ public class RandomMAC extends AbstractRandomService<String> {
     public boolean check(String input) {
         return true;
     }
+
+    @Override
+    public String getAliasName() {
+        return "mac";
+    }
 }

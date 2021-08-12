@@ -29,9 +29,20 @@ nav:
       - cat: usage_cli/cat.md
   - 随机类型:
       - 简介: randomtype/index.md
+      - 表达式随机: randomtype/expression.md
       - 默认国内城市: randomtype/cncity.md
       - 随机范围的整数: randomtype/rangenumber.md
-      - 表达式随机: randomtype/expression.md
+      - 指定列表的随机: randomtype/randomlist.md
+      - 随机对象: randomtype/obj.md
+      - 随机数组长度: randomtype/array.md
+      - 随机中文姓名: randomtype/cnname.md
+      - 随机邮箱: randomtype/email.md
+      - 随机中国大陆手机号: randomtype/cnphone.md
+      - 随机ipv4/ipv6: randomtype/ip.md
+      - UUID: randomtype/uuid.md
+      - MAC: randomtype/mac.md
+      - 随机生成经纬度: randomtype/LONLAT.md
+      - 随机生成浏览器代理: randomtype/user_agent.md
   - 开发:
       - 简介: develop/index.md
       - 新的随机类型: develop/newtype.md

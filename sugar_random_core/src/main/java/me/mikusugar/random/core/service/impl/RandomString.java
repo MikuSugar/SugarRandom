@@ -54,4 +54,9 @@ public class RandomString extends AbstractRandomService<String> {
         }
         return true;
     }
+
+    @Override
+    public String getAliasName() {
+        return "liststr";
+    }
 }

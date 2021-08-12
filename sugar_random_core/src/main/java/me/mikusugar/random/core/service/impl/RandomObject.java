@@ -30,4 +30,9 @@ public class RandomObject extends AbstractRandomService<Object> {
     public boolean check(String input) {
         return true;
     }
+
+    @Override
+    public String getAliasName() {
+        return "obj";
+    }
 }

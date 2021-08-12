@@ -51,4 +51,9 @@ public class RandomInt extends AbstractRandomService<Integer> {
         }
         return res;
     }
+
+    @Override
+    public String getAliasName() {
+        return "rangeint";
+    }
 }

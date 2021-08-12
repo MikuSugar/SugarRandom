@@ -79,15 +79,8 @@ public class RandomExpr extends AbstractRandomService {
 
     @Override
     public boolean check(String input) {
-        try {
-            String type = input.substring(0, input.indexOf(",")).trim();
-            String in = input.substring(input.indexOf(",") + 1);
-        } catch (Exception e) {
-            e.printStackTrace();
-            log.error(input + e);
-            return false;
-        }
-        return true;
+        if (input == null || input.isEmpty()) return false;
+        return input.contains(",");
     }
 }
 

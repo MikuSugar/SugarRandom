@@ -49,4 +49,9 @@ public class RandomArrayLen extends AbstractRandomService<Integer> {
             return res;
         } else return new int[]{Integer.parseInt(input)};
     }
+
+    @Override
+    public String getAliasName() {
+        return "array";
+    }
 }

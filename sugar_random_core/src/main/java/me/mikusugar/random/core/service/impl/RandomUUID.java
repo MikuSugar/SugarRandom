@@ -32,4 +32,9 @@ public class RandomUUID extends AbstractRandomService<String> {
     public SugarJsonNode.TYPE getType(String input) {
         return SugarJsonNode.TYPE.STRING;
     }
+
+    @Override
+    public String getAliasName() {
+        return "uuid";
+    }
 }

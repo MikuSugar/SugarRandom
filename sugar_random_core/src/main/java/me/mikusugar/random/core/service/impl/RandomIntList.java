@@ -57,4 +57,9 @@ public class RandomIntList extends AbstractRandomService<Integer> {
         }
         return true;
     }
+
+    @Override
+    public String getAliasName() {
+        return "listint";
+    }
 }

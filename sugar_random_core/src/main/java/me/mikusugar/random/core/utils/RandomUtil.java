@@ -29,17 +29,17 @@ public class RandomUtil {
     }
 
     public static RandomUtilInterface<Long> getRandomLong(long start, long end) {
-        assert start <= end;
+        assert start < end;
         return () -> start + Math.abs(random.nextLong() % (end - start)) % (end - start);
     }
 
     public static RandomUtilInterface<Integer> getRandomInt(int start, int end) {
-        assert start <= end;
+        assert start < end;
         return () -> start + random.nextInt(end - start);
     }
 
     public static RandomUtilInterface<Long> getRandomGaussianLong(long start, long end) {
-        assert start <= end;
+        assert start < end;
         return () ->
                 (long) (random.nextGaussian() * Math.sqrt(end - start)) + (end - start) / 2 + start;
     }

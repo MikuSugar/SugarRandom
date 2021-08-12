@@ -49,4 +49,9 @@ public class RandomEmail extends AbstractRandomService<String> {
         sb.append(email_suffix[(int) (Math.random() * email_suffix.length)]);
         return sb.toString();
     }
+
+    @Override
+    public String getAliasName() {
+        return "email";
+    }
 }

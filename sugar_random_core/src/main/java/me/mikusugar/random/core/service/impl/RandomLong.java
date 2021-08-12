@@ -51,4 +51,9 @@ public class RandomLong extends AbstractRandomService<Long> {
         }
         return res;
     }
+
+    @Override
+    public String getAliasName() {
+        return "rlong";
+    }
 }

@@ -39,6 +39,13 @@ public  abstract class  AbstractRandomService<T> {
      */
     public abstract boolean check(String input);
 
+    /**
+     * 别名
+     */
+    public String getAliasName(){
+        return null;
+    }
+
 
 
 }

@@ -82,5 +82,8 @@ public class DefaultRandomChainCity extends AbstractRandomService<String> {
         return true;
     }
 
-
+    @Override
+    public String getAliasName() {
+        return "city";
+    }
 }
