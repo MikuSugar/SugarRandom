@@ -1,0 +1,25 @@
+name: Deploy to Demo
+on:
+  push:
+    branches: [ master ]
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 登录到服务器拉取代码重新启动
+        uses: fifsky/ssh-action@master
+        with:
+          command: |
+            cd /root/soft/SugarRandom
+            git pull
+            cd sugar_random_core
+            mvn install
+            cd ../
+            kill -9 $(lsof -t -sTCP:LISTEN -i:8080)
+            mvn package -Pproduction
+            nohup mvn spring-boot:run -Dvaadin.productionMode=true > log.log &
+          host: ${{ secrets.DEPLOY_HOST }}
+          user: root
+          pass: ${{ secrets.DEPLOY_PASSWORD }}
+          args: "-tt"
