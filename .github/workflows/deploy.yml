@@ -17,8 +17,8 @@ jobs:
             mvn install
             cd ../
             kill -9 $(lsof -t -sTCP:LISTEN -i:8080)
-            mvn package -Pproduction
-            nohup mvn spring-boot:run -Dvaadin.productionMode=true > log.log &!
+            mvn clean package -Pproduction
+            nohup java -jar target/*.jar  > log.log &!
           host: ${{ secrets.DEPLOY_HOST }}
           user: root
           pass: ${{ secrets.DEPLOY_PASSWORD }}
