@@ -1,11 +1,13 @@
 package me.mikusugar.randomsugar.app.views.about;
 
 import com.vaadin.flow.component.Text;
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.html.*;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.PageTitle;
+import me.mikusugar.randomsugar.app.utils.Version;
 import me.mikusugar.randomsugar.app.views.main.MainView;
 import com.vaadin.flow.component.dependency.CssImport;
 
@@ -18,19 +20,25 @@ public class AboutView extends Div {
         addClassName("about-view");
         final HorizontalLayout top = createHorizontalLayout();
         add(top);
-//
-//        final HorizontalLayout log = createHorizontalLayout();
-//        final Image logImage = new Image();
-//        logImage.setSrc("https://cdn.jsdelivr.net/gh/mikusugar/PictureBed@master/uPic/2021/06/logo.gif");
-//        log.add(logImage);
-//        add(log);
+
+        final VerticalLayout infoLayout = new VerticalLayout();
+        infoLayout.setWidthFull();
+        infoLayout.setHorizontalComponentAlignment(FlexComponent.Alignment.CENTER);
+        add(infoLayout);
+        infoLayout.add(new Label("Version："+ Version.getVersion()));
+        infoLayout.add(new Anchor("https://mikusugar.me/SugarRandom/","SugarRandom 官网"));
 
         final HorizontalLayout imageMiku = createHorizontalLayout();
+        imageMiku.setWidthFull();
+        imageMiku.add(new Label("  "));
         final Image miku = new Image();
         miku.setSrc("https://cdn.jsdelivr.net/gh/mikusugar/PictureBed@master/uPic/2021/06/p6jHN7.jpg");
         imageMiku.add(miku);
+        imageMiku.setVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
+
         add(imageMiku);
-        add(new Text("by mikusugar"));
+
+
     }
 
     private HorizontalLayout createHorizontalLayout() {
