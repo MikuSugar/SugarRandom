@@ -315,7 +315,7 @@ public class SugarRandomView extends HorizontalLayout {
         }
         res.deleteCharAt(res.lastIndexOf(","));
         try {
-            return IOUtils.toInputStream(res.toString(), "GBK");
+            return IOUtils.toInputStream(res.toString(), "utf-8");
         } catch (IOException e) {
             e.printStackTrace();
         }
