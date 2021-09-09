@@ -1,5 +1,13 @@
 # 安装文档
 
+## 一键编译
+
+```shell
+git clone https://github.com/MikuSugar/SugarRandom.git && cd SugarRandom && sh Build.sh
+```
+
+👇是手动安装和运行步骤
+
 ## 下载源码
 
 ```shell
@@ -7,6 +15,7 @@ git clone https://github.com/MikuSugar/SugarRandom.git
 ```
 
 ## WEB 安装
+
 ### [可选]设置端口
 
 ```shell
