@@ -19,20 +19,21 @@ fi
 
 echo "☕️ mvn install core "
 cd sugar_random_core
-mvn clean install
+MVN_RUN clean install
 cd ../
 
 echo "☕️ build web"
-mvn clean package -Pproduction
+MVN_RUN clean package -Pproduction
 
 echo "☕️ build cli"
 cd sugar_random_cli
-mvn clean package
+MVN_RUN clean package
 cd ../
 
 echo "🎉 build success"
 echo "web 😊"
 echo target
+# shellcheck disable=SC2010
 ls -l target/ | grep '.jar$'
 echo "cli 😊"
 echo sugar_random_cli/target/
