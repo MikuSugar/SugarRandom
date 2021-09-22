@@ -27,6 +27,7 @@ nav:
       - 生成代码: usage_cli/generate_code.md
       - alias: usage_cli/alias.md
       - cat: usage_cli/cat.md
+      - d: usage_cli/d.md
   - 随机类型:
       - 简介: randomtype/index.md
       - 表达式随机: randomtype/expression.md

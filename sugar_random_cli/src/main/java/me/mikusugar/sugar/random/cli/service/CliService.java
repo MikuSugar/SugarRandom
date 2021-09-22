@@ -33,6 +33,8 @@ public class CliService {
     private SugarJsonNode rootNode;
     private SugarJsonNode curNode;
 
+    private final DService dService;
+
     public CliService(ApplicationContext applicationContext, GodService godService) {
 
         this.rootNode =
@@ -48,6 +50,9 @@ public class CliService {
 
         this.applicationContext = applicationContext;
         this.godService = godService;
+
+        this.dService = new DService();
+        dService.add("/root");
     }
 
     /**
@@ -64,8 +69,7 @@ public class CliService {
                     }
             );
         } catch (InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
-            log.warn("默认别名加载失败");
+            log.warn("默认别名加载失败", e);
         }
         return res;
 
@@ -96,7 +100,7 @@ public class CliService {
     }
 
     @ShellMethod(value = "展示某个随机结构的提示", group = "show")
-    public String showRType(String randomType) {
+    public String showRType(@ShellOption(valueProvider = RTypeValueProvider.class) String randomType) {
         final String helpStr = godService.getHelpStr(randomType.trim());
         if (helpStr == null) {
             return "找不到类型【" + randomType + "】!" + " 所有类型:" + System.lineSeparator() + showAllR();
@@ -130,7 +134,7 @@ public class CliService {
     ///////////////////////////////////////////////////////////////////////////
 
     @ShellMethod(value = "配置读取", group = "config")
-    public void read(String name) throws Exception {
+    public void read(@ShellOption(valueProvider = ConfigValueProvider.class) String name) throws Exception {
         val node = godService.getSugarJsonNode(name);
         assert node != null;
         this.rootNode = node;
@@ -144,12 +148,12 @@ public class CliService {
     }
 
     @ShellMethod(value = "配置删除", group = "config")
-    public void delConfig(String name) throws Exception {
+    public void delConfig(@ShellOption(valueProvider = ConfigValueProvider.class) String name) throws Exception {
         godService.delConfig(name);
     }
 
     @ShellMethod(value = "配置读取", group = "config")
-    public void readAlias(String name) throws Exception {
+    public void readAlias(@ShellOption(valueProvider = AliasValueProvider.class) String name) throws Exception {
         godService.readAlias(name, aliasMap);
     }
 
@@ -160,7 +164,7 @@ public class CliService {
     }
 
     @ShellMethod(value = "配置删除", group = "config")
-    public void delAliasConf(String name) throws Exception {
+    public void delAliasConf(@ShellOption(valueProvider = AliasValueProvider.class) String name) throws Exception {
         godService.delAlias(name);
     }
 
@@ -185,6 +189,7 @@ public class CliService {
             this.curNode = res;
         } else throw new Exception("cd 只能进入到Array 和 Object");
         applicationContext.publishEvent(curNode);
+        dService.add(pwd());
     }
 
     @ShellMethod(value = "展示结构", group = "unix-style")
@@ -195,7 +200,8 @@ public class CliService {
     }
 
     @ShellMethod(value = "别名，仅针对随机类型名，会覆盖，优先级大于随机类型名", group = "unix-style")
-    public void alias(String rType, String aliasName) throws Exception {
+    public void alias(@ShellOption(valueProvider = RTypeValueProvider.class) String rType,
+                      String aliasName) throws Exception {
         if (!godService.checkAliasEventService(aliasName)) throw new Exception("别名不能与随机类型名相同");
         aliasMap.put(aliasName, rType);
     }
@@ -219,7 +225,8 @@ public class CliService {
     }
 
     @ShellMethod(value = "添加字段", group = "unix-style")
-    public void touch(String field, String rtype,
+    public void touch(String field,
+                      @ShellOption(valueProvider = RTypeValueProvider.class) String rtype,
                       @ShellOption(defaultValue = "") String input) throws Exception {
 
         if (aliasMap.containsKey(rtype)) rtype = aliasMap.get(rtype);
@@ -242,13 +249,21 @@ public class CliService {
     }
 
     @ShellMethod(value = "配置读取", group = "unix-style")
-    public void source(String name) throws Exception {
+    public void source(@ShellOption(valueProvider = AliasValueProvider.class) String name) throws Exception {
         godService.readAlias(name, aliasMap);
     }
 
-    @ShellMethod(value = "展示别名",group = "unix-style")
+    @ShellMethod(value = "展示别名", group = "unix-style")
     public String echo(@ShellOption(defaultValue = "") String name) throws Exception {
         return godService.echo(name, aliasMap);
+    }
+
+    @ShellMethod(value = "历史路径记录", group = "unix-style")
+    public String d(@ShellOption(defaultValue = "-1") int idx) throws Exception {
+        if (idx == -1) return dService.getShow();
+        final String path = dService.getPath(idx);
+        cd(path);
+        return "cd " + path;
     }
 
 }

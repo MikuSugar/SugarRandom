@@ -1,6 +1,8 @@
 # alias 命令的使用
 
 > 这个命令的初衷是随机类型名太长了，这个项目最初是为WEB考虑的，WEB可以通过下拉框选择随机类型，CLI 只能手打命令，理论上可以做到自动补全，但是我翻了一遍spring shell的文档没有找到。。。不知道怎么实现。所以弄了alias系列命令。
+>
+> 2021/09/22 自定义补全找到方法了。（中文半天搜不出来，用英文搜出来的）[https://stackoverflow.com/questions/35624665/is-it-possible-to-tab-complete-values-in-spring-shell](https://stackoverflow.com/questions/35624665/is-it-possible-to-tab-complete-values-in-spring-shell)
 
 ## alias
 
