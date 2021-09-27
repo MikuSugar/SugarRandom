@@ -6,7 +6,7 @@
 
     <groupId>me.mikusugar.random.cli</groupId>
     <artifactId>sugar_random_cli</artifactId>
-    <version>1.2-SNAPSHOT</version>
+    <version>1.2</version>
 
     <dependencyManagement>
         <dependencies>
@@ -42,7 +42,7 @@
         <dependency>
             <groupId>me.mikusugar.random</groupId>
             <artifactId>sugar_random_core</artifactId>
-            <version>1.2-SNAPSHOT</version>
+            <version>1.2</version>
         </dependency>
     </dependencies>
     <build>
