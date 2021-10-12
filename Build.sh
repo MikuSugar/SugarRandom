@@ -19,15 +19,15 @@ fi
 
 echo "☕️ mvn install core "
 cd sugar_random_core
-MVN_RUN clean install
+$MVN_RUN clean install
 cd ../
 
 echo "☕️ build web"
-MVN_RUN clean package -Pproduction
+$MVN_RUN clean package -Pproduction
 
 echo "☕️ build cli"
 cd sugar_random_cli
-MVN_RUN clean package
+$MVN_RUN clean package
 cd ../
 
 echo "🎉 build success"

@@ -1,6 +1,5 @@
 package me.mikusugar.randomsugar.app.views.about;
 
-import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
