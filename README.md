@@ -34,3 +34,7 @@ Randomly generated data tool
 
 
 
+## 感谢😊
+
+[![](https://www.jetbrains.com/apple-touch-icon.png)](https://www.jetbrains.com)
+
