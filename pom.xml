@@ -180,7 +180,7 @@
         <dependency>
             <groupId>me.mikusugar.random</groupId>
             <artifactId>sugar_random_core</artifactId>
-            <version>1.2</version>
+            <version>1.2.1</version>
         </dependency>
 
     </dependencies>
