@@ -6,7 +6,7 @@
     <groupId>me.mikusugar</groupId>
     <artifactId>sugarrandom</artifactId>
     <name>Project base for Spring Boot and Vaadin Flow</name>
-    <version>1.2</version>
+    <version>1.2.1</version>
     <packaging>jar</packaging>
 
     <properties>
